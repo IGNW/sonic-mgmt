@@ -10,7 +10,9 @@
         "Arista-VM": "Arista",
         "Nexus-3064-NX": "Nexus",
         "Force10-S6100": "Force10",
-        "Force10-S6000": "Force10"
+        "Force10-S6000": "Force10",
+        "TestServ": "Test_Server",
+        "Seastone-DX010": "Seastone"
     },
     "switch_login": {
         "Nexus": { 
@@ -27,6 +29,16 @@
             "user": "admin",
             "passwd": ["password"],
             "enable": ["password"] 
+        },
+        "Seastone": {
+            "user": "admin",
+            "passwd": ["YourPaSsWoRd"],
+            "enable": ["YourPaSsWoRd"] 
+        },
+        "Test_Server": {
+            "user": "ignw",
+            "passwd": ["ignw!098"],
+            "enable": ["ignw!098"] 
         }
     }
 }

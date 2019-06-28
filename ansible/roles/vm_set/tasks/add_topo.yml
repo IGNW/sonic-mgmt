@@ -1,3 +1,23 @@
+- name: Debug value of docker_registry_host
+  debug:
+    var: docker_registry_host
+
+- name: Debug value of docker_registry_username
+  debug:
+    var: docker_registry_username
+
+- name: Debug value of docker_registry_password
+  debug:
+    var: docker_registry_password
+
+- name: Debug value of vm_set_name
+  debug:
+    var: vm_set_name
+
+- name: Debug value of ptf_imagename
+  debug:
+    var: ptf_imagename
+
 - name: Create a docker container ptf_{{ vm_set_name }}
   docker:
     registry: "{{ docker_registry_host }}"

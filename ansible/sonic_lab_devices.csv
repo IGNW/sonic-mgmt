@@ -1,4 +1,4 @@
 Hostname,ManagementIp,HwSku,Type
 linkedin-testbed,10.50.0.9/22,TestServ,Server
-lab-ignw-seastone-dut-li1,10.50.0.8/22,Seastone-DX010,DevSonic
 lab-ignw-seastone-fan-li2,10.50.0.7/22,Seastone-DX010,FanoutLeaf
+lab-ignw-seastone-dut-li1,10.50.0.8/22,Seastone-DX010,DevSonic

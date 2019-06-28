@@ -1,2 +1,6 @@
 # Compiled Python files
 ansible/plugins/filter/*.pyc
+d.sh
+*/backup
+*.swp
+password.txt

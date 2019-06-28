@@ -126,8 +126,6 @@ options:
   memory_limit:
     description:
       - RAM allocated to the container as a number of bytes or as a human-readable
-        string like "512MB". Leave as "0" to specify no limit.
-    default: 0
   docker_url:
     description:
       - URL of the host running the docker daemon. This will default to the env

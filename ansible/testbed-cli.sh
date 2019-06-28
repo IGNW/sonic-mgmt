@@ -75,6 +75,15 @@ function read_file
  server=${line_arr[5]}
  vm_base=${line_arr[6]}
  dut=${line_arr[7]}
+
+ echo "'testbed_name' is $testbed_name"
+ echo "'topo' is $topo" 
+ echo "'ptf_imagename' is $ptf_imagename" 
+ echo "'ptf_ip' is $ptf_ip" 
+ echo "'server' is $server" 
+ echo "'vm_base' is $vm_base" 
+ echo "'dut' is $dut" 
+ echo "'tbfile' is $tbfile"
 }
 
 function start_vms
@@ -109,9 +118,20 @@ function add_topo
 
   read_file ${topology}
 
+  echo "'vmfile' is $vmfile"
+  echo "'passwd' is ${passwd}"
+  echo "'server' is $server"
+  echo "'topo_name' is $topo_name"
+  echo "'dut' is $dut"
+  echo "'vm_base' is $vm_base"
+  echo "'ptf_ip' is $ptf_ip"
+  echo "'topo' is $topo"
+  echo "'testbed_name' is $testbed_name"
+  echo "'ptf_imagename' is $ptf_imagename"
+
   ANSIBLE_SCP_IF_SSH=y ansible-playbook -i $vmfile testbed_add_vm_topology.yml --vault-password-file="${passwd}" -l "$server" -e topo_name="$topo_name" -e dut_name="$dut" -e VM_base="$vm_base" -e ptf_ip="$ptf_ip" -e topo="$topo" -e vm_set_name="$testbed_name" -e ptf_imagename="$ptf_imagename" $@
 
-  ansible-playbook fanout_connect.yml -i $vmfile --limit "$server" --vault-password-file="${passwd}" -e "dut=$dut" $@
+  # ansible-playbook fanout_connect.yml -i $vmfile --limit "$server" --vault-password-file="${passwd}" -e "dut=$dut" $@
 
   # Delete the obsoleted arp entry for the PTF IP
   ip neighbor flush $ptf_ip
@@ -203,7 +223,7 @@ function generate_minigraph
 function deploy_minigraph
 {
   echo "Deploying minigraph '$1'"
-
+  
   read_file $1
 
   ansible-playbook -i "$2" config_sonic_basedon_testbed.yml --vault-password-file="$3" -l "$dut" -e testbed_name="$1" -e testbed_file=$tbfile -e deploy=true -e save=true
