@@ -202,7 +202,7 @@ testcases:
 
     syslog:
       filename: syslog.yml
-      topologies: [t0, t0-56, t0-64, t0-64-32, t0-116, t1, t1-lag, t1-64-lag, ptf32, ptf64]
+      topologies: [t0-8, t1-8, t0, t0-56, t0-64, t0-64-32, t0-116, t1, t1-lag, t1-64-lag, ptf32, ptf64]
 
     vlan:
       filename: vlantb.yml
