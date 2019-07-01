@@ -1,10 +1,10 @@
 - block:
 
     - name: Verify Polling Defaults
-      shell: crm show summary |grep -v ^$|awk '{if($3!=300){exit 1}}'
+      shell: crm show summary |awk '/^$/ {next}{if($3!=300){exit 1}}'
 
     - name: Verify Default min thresholds
-      shell: crm show thresholds all|tail +5|grep -v ^$|awk '{if($3!=70){exit 1}}'
+      shell: crm show thresholds all|tail +5|awk '/^$/ {next}{if($3!=70){exit 1}}'
 
     - name: Verify Default max thresholds
-      shell: crm show thresholds all|tail +5|grep -v ^$|awk '{if($4!=85){exit 1}}'
+      shell: crm show thresholds all|tail +5|awk '/^$/ {next}{if($4!=85){exit 1}}'
