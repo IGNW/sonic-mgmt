@@ -1,0 +1,23 @@
+- block:
+
+  - name: Clear all saved stats prior to tests
+    shell: portstat -D || true
+
+  - name: Test portstat clear and save stats
+    shell: portstat -c -t test
+
+  - name: Test portstat json output
+    shell: portstat -j | python -m json.tool
+
+  - name: Test portstat raw output
+    shell: porstat -r
+
+  - name: Test portstat all stat counters
+    shell: portstat -a
+
+  - name: Test portstat period
+    shell: portstat -p 30
+  
+  always:
+  - name: Clear and reset counters
+    shell: portstat -D
