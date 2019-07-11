@@ -1,0 +1,49 @@
+# Subtask to bounce an ipv4 neighbor and verify it comes back
+- block:
+  - name: output variables
+    debug:
+      msg: "Exercizing BGP peer link for peer: {{ peer }}"
+
+  - name: shut down neighbor peer links
+    shell: config bgp shutdown neighbor {{ peer }}
+    become: yes
+
+  - name: execute show command
+    shell: show bgp ipv4 summary json
+    register: output
+
+  - name: convert output to json and extract bgp peers
+    set_fact:
+      subtask_bgp_peers: "{{ (output.stdout|from_json).ipv4Unicast.peers }}"
+
+  - name: verify BGP peers are 'Idle (Admin)'
+    assert: { that: "subtask_bgp_peers[peer].state == 'Idle (Admin)'" }
+
+  - name: start up all peer links
+    shell: config bgp startup neighbor {{ peer }}
+    become: yes
+
+  - name: wait for link to come up
+    pause:
+      seconds: 2 
+
+  - name: execute show command
+    shell: show bgp ipv4 summary json
+    register: output
+
+  - name: convert output to json and extract bgp peers
+    set_fact:
+      subtask_bgp_peers: "{{ (output.stdout|from_json).ipv4Unicast.peers }}"
+
+  - name: verify BGP peers are 'Established'
+    assert: { that: "subtask_bgp_peers[peer].state == 'Established'" }
+
+- rescue:
+  - name: start up peer links due to failed test
+    shell: config bgp startup neighbor {{ peer }}
+    become: yes
+
+  - name: output debug message
+    debug:
+      msg: "Starting up link {{ peer }} due to failed test"
+
