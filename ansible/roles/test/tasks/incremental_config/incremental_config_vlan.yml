@@ -1,4 +1,4 @@
-- debug: msg="Starting vlan cli config test"
+- debug: msg="Starting vlan incremental config test"
 
 # Add and remove a vlan, add and remove a member
 - block:

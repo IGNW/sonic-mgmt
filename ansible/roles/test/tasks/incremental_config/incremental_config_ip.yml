@@ -1,4 +1,4 @@
-- debug: msg="Starting ip cli config test"
+- debug: msg="Starting ip incremental config test"
 
 - name: fail if environment is not set
   fail: msg="the ip_type variables is not set"

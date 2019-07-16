@@ -1,6 +1,6 @@
-- debug: msg="Starting port channel cli config test"
+- debug: msg="Starting port channel incremental config test"
 
-- name: set initial variables for portchannel cli test
+- name: set initial variables for portchannel test
   set_fact:
     ethernet_portchannel_interfaces: []
 
