@@ -1,0 +1,85 @@
+- debug: msg="Configuration Test for topologies with No Port Channels"
+
+- name: gather interface facts
+  interface_facts:
+
+- name: set initial variables
+  set_fact:
+    active_eth_iface_list: [] 
+    test_ipv4_address: 10.200.4.5/31
+    test_ipv6_address: fc00::ff07/126
+    test_port_channel_name: test_pc
+
+- name: create active interface list
+  set_fact:
+    active_eth_iface_list: "{{ active_eth_iface_list }} + ['{{ item.device }}']"
+  when: item.active == true and "Ethernet" in item.device 
+  with_items: "{{ ansible_interface_facts.values() }}"
+
+- name: set test interface variable
+  set_fact:
+    test_iface: "{{ active_eth_iface_list[0] }}"
+  
+
+# Add and remove an ipv4 address from an interface
+- block:
+    - name: add IP to interface
+      shell: config interface ip add {{ test_iface }} {{ test_ipv4_address }}
+      become: yes
+    
+    - name: confirm IP was added to the interface
+      shell: show ip interfaces | grep {{ test_ipv4_address }} 
+      register: out
+
+    - name: verify that the IP shows up in the output 
+      assert:
+        that:  out.stdout | search(test_ipv4_address)
+
+    - name: remove IP from the interface
+      shell: config interface ip remove {{ test_iface }} {{ test_ipv4_address }}
+      become: yes
+    
+    - name: confirm IP was removed from the interface
+      shell: show ip interfaces | grep {{ test_ipv4_address }} || true
+      register: out
+
+    - name: verify that the IP does not show up in the output 
+      assert:
+        that:  not out.stdout
+
+  rescue:
+    - name: remove IP from the interface on failure
+      shell: config interface ip remove {{ test_iface }} {{ test_ipv4_address }}
+      become: yes
+
+# Add and remove an ipv6 address from an interface
+- block:
+    - name: add IP to interface
+      shell: config interface ip add {{ test_iface }} {{ test_ipv6_address }}
+      become: yes
+    
+    - name: confirm IP was added to the interface
+      shell: show ipv6 interfaces | grep {{ test_ipv6_address }} 
+      register: out
+
+    - name: verify that the IP shows up in the output 
+      assert:
+        that:  out.stdout | search(test_ipv6_address)
+
+    - name: remove IP from interface
+      shell: config interface ip remove {{ test_iface }} {{ test_ipv6_address }}
+      become: yes
+    
+    - name: confirm IP was removed from the interface
+      shell: show ipv6 interfaces | grep {{ test_ipv6_address }} || true
+      register: out
+
+    - name: verify that the IP does not show up in the output 
+      assert:
+        that:  not out.stdout
+
+  rescue:
+    - name: remove IP from the interface on failure
+      shell: config interface ip remove {{ test_iface }} {{ test_ipv6_address }}
+      become: yes
+
