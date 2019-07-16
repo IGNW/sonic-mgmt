@@ -6,6 +6,8 @@
 - name: set initial variables
   set_fact:
     active_eth_iface_list: [] 
+    ethernet_portchannel_interfaces: []
+    ethernet_portchannel_interfaces_post_delete: []
     test_ipv4_address: 10.200.4.5/31
     test_ipv6_address: fc00::ff07/126
     test_port_channel_name: test_pc
@@ -21,6 +23,7 @@
   set_fact:
     test_iface: "{{ active_eth_iface_list[0] }}"
     test_vlan_iface: "{{ active_eth_iface_list[-1] }}" 
+    test_portchannel_members: ["{{ active_eth_iface_list[0] }}","{{ active_eth_iface_list[-1] }}"]
 
 # Add and remove an ipv4 address from an interface
 - block:
@@ -139,5 +142,106 @@
   rescue:
     - name: remove vlan and member from the interface on failure
       shell: config vlan del {{ test_vlan }}
+      become: yes
+
+# Add and remove a portchannel, add and remove a member
+- block:
+    - name: add a port channel 
+      shell: config portchannel add {{ test_port_channel_name }} 
+      become: yes
+    
+    - name: confirm portchannel was added to the interface
+      shell: show interfaces portchannel 
+      register: out
+
+    - name: verify that the portchannel shows up in the output 
+      assert:
+        that:  out.stdout | search("PortChannel")
+
+    - name: add members to the portchannel
+      shell: config portchannel member add {{ test_port_channel_name }} {{ item }}
+      become: yes
+      with_items: "{{ test_portchannel_members }}"
+
+    - name: verify members added to the portchannel
+      shell: show interfaces status
+      register: out
+
+    - name: verify info in the output
+      debug:
+        var: out
+
+  rescue:
+    - name: remove the portchannel on failure
+      shell: config portchannel del {{ test_port_channel_name }} 
+      become: yes
+
+# Add and remove a portchannel, add and remove a member
+- block:
+    - name: add a port channel 
+      shell: config portchannel add {{ test_port_channel_name }} 
+      become: yes
+    
+    - name: confirm portchannel was added to the interface
+      shell: show interfaces portchannel 
+      register: out
+
+    - name: verify that the portchannel shows up in the output 
+      assert:
+        that:  out.stdout | search("PortChannel")
+
+    - name: add members to the portchannel
+      shell: config portchannel member add {{ test_port_channel_name }} {{ item }}
+      become: yes
+      with_items: "{{ test_portchannel_members }}"
+
+    - name: verify members added to the portchannel
+      shell: show interfaces status
+      register: out
+
+    - name: pull out lines from output for the portchannel ports
+      set_fact:
+        ethernet_portchannel_interfaces: "{{ ethernet_portchannel_interfaces }} + ['{{ item }}']"
+      when: "{{ item | search(test_port_channel_name) }}"
+      with_items: "{{ out.stdout_lines }}"
+  
+    - name: check the condensed list and confirm each port channel member is in the list
+      assert:
+        that: ethernet_portchannel_interfaces | select('match', item)
+      with_items: "{{ test_portchannel_members }}"
+
+    - name: remove the members from the port channel
+      shell: config portchannel member del {{ test_port_channel_name }} {{ item }}
+      become: yes
+      with_items: "{{ test_portchannel_members }}"
+
+    - name: verify the ports have been removed
+      shell: show interfaces status
+      register: out
+
+    - name: verify the portchannel name no longer shows up in the output
+      assert:
+        that: test_port_channel_name not in out.stdout
+
+    - name: remove the portchannel
+      shell: config portchannel del {{ test_port_channel_name }} 
+      become: yes
+    
+    - name: verify the portchannel has been removed
+      shell: show interfaces portchannel 
+      register: out
+
+    - name: verify that the portchannel is not configured
+      assert:
+        that: not out.stdout | search("PortChannel")
+
+  rescue:
+    - name: remove portchannel members on failure
+      shell: config portchannel member del {{ test_port_channel_name }} {{ item }}
+      become: yes
+      with_items: "{{ test_portchannel_members }}"
+
+    - name: remove the portchannel on failure
+      shell: config portchannel del {{ test_port_channel_name }} 
       become: yes
 
