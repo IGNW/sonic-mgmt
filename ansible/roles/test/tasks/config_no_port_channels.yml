@@ -166,10 +166,6 @@
       shell: show interfaces status
       register: out
 
-    - name: verify info in the output
-      debug:
-        var: out
-
   rescue:
     - name: remove the portchannel on failure
       shell: config portchannel del {{ test_port_channel_name }} 
