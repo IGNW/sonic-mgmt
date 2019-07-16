@@ -9,6 +9,7 @@
     test_ipv4_address: 10.200.4.5/31
     test_ipv6_address: fc00::ff07/126
     test_port_channel_name: test_pc
+    test_vlan: 100
 
 - name: create active interface list
   set_fact:
@@ -19,7 +20,7 @@
 - name: set test interface variable
   set_fact:
     test_iface: "{{ active_eth_iface_list[0] }}"
-  
+    test_vlan_iface: "{{ active_eth_iface_list[-1] }}" 
 
 # Add and remove an ipv4 address from an interface
 - block:
@@ -64,7 +65,7 @@
 
     - name: verify that the IP shows up in the output 
       assert:
-        that:  out.stdout | search(test_ipv6_address)
+        that: out.stdout | search(test_ipv6_address)
 
     - name: remove IP from interface
       shell: config interface ip remove {{ test_iface }} {{ test_ipv6_address }}
@@ -76,10 +77,67 @@
 
     - name: verify that the IP does not show up in the output 
       assert:
-        that:  not out.stdout
+        that:  not out.stdout 
 
   rescue:
     - name: remove IP from the interface on failure
       shell: config interface ip remove {{ test_iface }} {{ test_ipv6_address }}
+      become: yes
+
+# Add and remove a vlan, add and remove a member
+- block:
+    - name: add vlan
+      shell: config vlan add {{ test_vlan }}
+      become: yes
+    
+    - name: confirm vlan was added 
+      shell: show vlan brief 
+      register: out
+
+    - name: verify that the vlan was added 
+      assert:
+        that: out.stdout | search(test_vlan | string)
+
+    - name: add the vlan to an interface
+      shell: config vlan member add {{ test_vlan }} {{ test_vlan_iface }}
+      become: yes
+
+    - name: confirm vlan was member was added to the vlan
+      shell: show vlan config
+      register: out
+
+    - name: verify that the member was added 
+      assert:
+        that: out.stdout | search(test_vlan | string)
+        that: out.stdout | search(test_vlan_iface)
+
+    - name: remove the vlan from the interface
+      shell: config vlan member del {{ test_vlan }} {{ test_vlan_iface }}
+      become: yes
+
+    - name: confirm vlan was member was removed from the vlan
+      shell: show vlan config
+      register: out
+
+    - name: verify that the member was removed 
+      assert:
+        that: not out.stdout | search(test_vlan | string)
+        that: not out.stdout | search(test_vlan_iface)
+
+    - name: remove vlan 
+      shell: config vlan del {{ test_vlan }}
+      become: yes
+    
+    - name: confirm vlan was deleted 
+      shell: show vlan brief 
+      register: out
+
+    - name: verify that the vlan does not show up in the output 
+      assert:
+        that:  not out.stdout | search(test_vlan | string) 
+
+  rescue:
+    - name: remove vlan and member from the interface on failure
+      shell: config vlan del {{ test_vlan }}
       become: yes
 
