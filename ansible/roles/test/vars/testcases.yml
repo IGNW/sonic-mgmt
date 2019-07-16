@@ -39,8 +39,8 @@ testcases:
         filename: config.yml
         topologies: [t1-lag, t1-64-lag, t0, t0-64, t0-116]
 
-    config_no_port_channels:
-        filename: config_no_port_channels.yml
+    cli_config:
+        filename: cli_config.yml
         topologies: [t0-8, t1-8]
 
     continuous_reboot:
