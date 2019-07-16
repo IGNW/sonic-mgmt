@@ -7,7 +7,6 @@
   set_fact:
     active_eth_iface_list: [] 
     ethernet_portchannel_interfaces: []
-    ethernet_portchannel_interfaces_post_delete: []
     test_ipv4_address: 10.200.4.5/31
     test_ipv6_address: fc00::ff07/126
     test_port_channel_name: test_pc
@@ -61,7 +60,7 @@
     - name: add IP to interface
       shell: config interface ip add {{ test_iface }} {{ test_ipv6_address }}
       become: yes
-    
+
     - name: confirm IP was added to the interface
       shell: show ipv6 interfaces | grep {{ test_ipv6_address }} 
       register: out
