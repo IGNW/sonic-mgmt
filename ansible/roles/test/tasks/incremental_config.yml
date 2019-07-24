@@ -1,0 +1,41 @@
+- debug: msg="Tests for the incremental configuration features of the cli"
+
+- name: gather interface facts
+  interface_facts:
+
+- name: set initial variables
+  set_fact:
+    active_eth_iface_list: [] 
+    ethernet_portchannel_interfaces: []
+    test_ipv4_address: 10.200.4.5/31
+    test_ipv6_address: fc00::ff07/126
+    test_port_channel_name: test_pc
+    test_vlan: 100
+
+- name: create active interface list
+  set_fact:
+    active_eth_iface_list: "{{ active_eth_iface_list }} + ['{{ item.device }}']"
+  when: item.active == true and "Ethernet" in item.device 
+  with_items: "{{ ansible_interface_facts.values() }}"
+
+- name: set test interface variable
+  set_fact:
+    test_iface: "{{ active_eth_iface_list[0] }}"
+    test_vlan_iface: "{{ active_eth_iface_list[-1] }}" 
+    test_portchannel_members: ["{{ active_eth_iface_list[0] }}","{{ active_eth_iface_list[-1] }}"]
+
+# Add and remove an ipv4 address from an interface
+- name: run ipv4 tests
+  include: incremental_config/incremental_config_ip.yml address={{test_ipv4_address}} interface={{test_iface}} ip_type='ipv4' 
+
+# Add and remove an ipv6 address from an interface
+- name: run ipv6 tests
+  include: incremental_config/incremental_config_ip.yml address={{test_ipv6_address}} interface={{test_iface}} ip_type='ipv6' 
+
+# Add and remove a vlan from an interface
+- name: run vlan tests
+  include: incremental_config/incremental_config_vlan.yml vlan={{test_vlan}} interface={{test_vlan_iface}}
+
+# Add and remove a portchannel to the switch
+- name: run portchannel tests
+  include: incremental_config/incremental_config_portchannel.yml name={{test_port_channel_name}} members={{test_portchannel_members}}
