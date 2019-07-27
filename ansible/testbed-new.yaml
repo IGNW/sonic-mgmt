@@ -190,22 +190,27 @@ testbed:
     t0-eight:
         group-name: ptf                                     # source: sonic-mgmt/ansible/testbed.csv
         topo: t0-8                                          # source: sonic-mgmt/ansible/testbed.csv
-        ptf_image_name: localhost:5000/docker-ptf           # source: sonic-mgmt/ansible/testbed.csv
+        ptf_image_name: docker-ptf                          # source: sonic-mgmt/ansible/testbed.csv
         ptf_ip: 10.50.0.200/22                              # source: sonic-mgmt/ansible/testbed.csv
-        server: server_1                                    # source: sonic-mgmt/ansible/testbed.csv
+        server: linkedin-testbed                            # source: sonic-mgmt/ansible/testbed.csv
         vm_base: VM0100                                     # source: sonic-mgmt/ansible/testbed.csv
         dut: lab-ignw-seastone-dut-li1                      # source: sonic-mgmt/ansible/testbed.csv
         comment: Test ptf ignw                              # source: sonic-mgmt/ansible/testbed.csv
     t1-eight:
         group-name: ptf                                     # source: sonic-mgmt/ansible/testbed.csv
         topo: t1-8                                          # source: sonic-mgmt/ansible/testbed.csv
-        ptf_image_name: localhost:5000/docker-ptf           # source: sonic-mgmt/ansible/testbed.csv
+        ptf_image_name: docker-ptf                          # source: sonic-mgmt/ansible/testbed.csv
         ptf_ip: 10.50.0.200/22                              # source: sonic-mgmt/ansible/testbed.csv
-        server: server_1                                    # source: sonic-mgmt/ansible/testbed.csv
+        server: linkedin-testbed                            # source: sonic-mgmt/ansible/testbed.csv
         vm_base: VM0100                                     # source: sonic-mgmt/ansible/testbed.csv
         dut: lab-ignw-seastone-dut-li1                      # source: sonic-mgmt/ansible/testbed.csv
         comment: Test ptf ignw                              # source: sonic-mgmt/ansible/testbed.csv
 
+    ptf_ptf1:
+        ansible:
+            ansible_host: 10.50.0.200/22                    # source: sonic-mgmt/ansible/lab
+            ansible_ssh_user: root
+            ansible_ssh_pass: root
 
 # topology dictionary contains information about the topology (which device ports connect to each other)
 # topology is used to generate sonic_lab_links
@@ -214,59 +219,70 @@ topology:                               # source: sonic-mgmt/ansible/files/sonic
     lab-ignw-seastone-dut-li1:                     # source: sonic-mgmt/ansible/files/sonic_lab_links.csv
         interfaces:                     # DUT/ start device
             Ethernet0:
-                EndDevice: lab-ignw-seastone-dut-li2 
-                EndPort: Ethernet1
+                EndDevice: lab-ignw-seastone-fan-li2 
+                EndPort: 0/1
                 Bandwidth: 100000
                 VlanID: 1681
                 VlanMode: Access
             Ethernet4: 
-                EndDevice: lab-ignw-seastone-dut-li2
-                EndPort: Ethernet2
+                EndDevice: lab-ignw-seastone-fan-li2
+                EndPort: 0/2
                 Bandwidth: 100000
                 VlanID: 1682
                 VlanMode: Access
             Ethernet8:
-                EndDevice: lab-ignw-seastone-dut-li2
-                EndPort: Ethernet3
+                EndDevice: lab-ignw-seastone-fan-li2
+                EndPort: 0/3
                 Bandwidth: 100000
                 VlanID: 1683
                 VlanMode: Access
             Ethernet12:
-                EndDevice: lab-ignw-seastone-dut-li2
-                EndPort: Ethernet4
+                EndDevice: lab-ignw-seastone-fan-li2
+                EndPort: 0/4
                 Bandwidth: 100000
                 VlanID: 1684
                 VlanMode: Access
             Ethernet16:
-                EndDevice: lab-ignw-seastone-dut-li2
-                EndPort: Ethernet5
+                EndDevice: lab-ignw-seastone-fan-li2
+                EndPort: 0/5
                 Bandwidth: 100000
                 VlanID: 1685
                 VlanMode: Access
             Ethernet20:
-                EndDevice: lab-ignw-seastone-dut-li2
-                EndPort: Ethernet6
+                EndDevice: lab-ignw-seastone-fan-li2
+                EndPort: 0/6
                 Bandwidth: 100000 
                 VlanID: 1686
                 VlanMode: Access
             Ethernet24:
-                EndDevice: lab-ignw-seastone-dut-li2
-                EndPort: Ethernet7
+                EndDevice: lab-ignw-seastone-fan-li2
+                EndPort: 0/7
                 Bandwidth: 100000 
                 VlanID: 1687
                 VlanMode: Access
             Ethernet28:
-                EndDevice: lab-ignw-seastone-dut-li2
-                EndPort: Ethernet8
+                EndDevice: lab-ignw-seastone-fan-li2
+                EndPort: 0/8 
                 Bandwidth: 100000 
                 VlanID: 1688
                 VlanMode: Access
+    lab-ignw-seastone-fan-li2:
+        interfaces:
+            "0/32":
+                EndDevice: linkedin-testbed
+                EndPort: "ens6f0"
+                Bandwidth: 100000
+                VlanID: ""
+                VlanMode: Trunk
 
 # docker_registry is optional. It is not necessary unless you want to change the default location of the docker-registry.
 # docker_registry dictionary contains information about the host, username, and password
 # docker_registry is used to generate docker_registry.yaml
 # docker_registry dictionary does not cross reference with other files 
 docker_registry:
-    docker_registry_host: localhost:5000
+    docker_registry_host: 10.50.0.9:5000
+    docker_registry_username: " "
+    docker_registry_password: " "
+
 
 

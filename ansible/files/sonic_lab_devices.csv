@@ -1,5 +1,4 @@
 Hostname,ManagementIp,HwSku,Type
-str-msn2700-01,10.251.0.188/23,Mellanox-2700,DevSonic
-str-7260-10,10.251.0.13/23,Arista-7260QX-64,FanoutLeaf
-str-7260-11,10.251.0.234/23,Arista-7260QX-64,FanoutRoot
-str-acs-serv-01,10.251.0.245/23,TestServ,Server
+linkedin-testbed,10.50.0.9/22,TestServ,Server
+lab-ignw-seastone-dut-li1,10.50.0.8/22,Seastone-DX010,DevSonic
+lab-ignw-seastone-fan-li2,10.50.0.7/22,Seastone-DX010,FanoutLeaf
