@@ -1,4 +1,4 @@
 docker_registry_host: 10.50.0.9:5000
 
-docker_registry_username:  
-docker_registry_password: root 
+docker_registry_username: ""
+docker_registry_password: ""

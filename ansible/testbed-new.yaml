@@ -189,7 +189,7 @@ veos:
 testbed:
     t0-eight:
         group-name: ptf                                     # source: sonic-mgmt/ansible/testbed.csv
-        topo: t0-8                                          # source: sonic-mgmt/ansible/testbed.csv
+        topo: "t0-8"                                        # source: sonic-mgmt/ansible/testbed.csv
         ptf_image_name: docker-ptf                          # source: sonic-mgmt/ansible/testbed.csv
         ptf_ip: 10.50.0.200/22                              # source: sonic-mgmt/ansible/testbed.csv
         server: linkedin-testbed                            # source: sonic-mgmt/ansible/testbed.csv
@@ -198,7 +198,7 @@ testbed:
         comment: Test ptf ignw                              # source: sonic-mgmt/ansible/testbed.csv
     t1-eight:
         group-name: ptf                                     # source: sonic-mgmt/ansible/testbed.csv
-        topo: t1-8                                          # source: sonic-mgmt/ansible/testbed.csv
+        topo: "t1-8"                                        # source: sonic-mgmt/ansible/testbed.csv
         ptf_image_name: docker-ptf                          # source: sonic-mgmt/ansible/testbed.csv
         ptf_ip: 10.50.0.200/22                              # source: sonic-mgmt/ansible/testbed.csv
         server: linkedin-testbed                            # source: sonic-mgmt/ansible/testbed.csv
