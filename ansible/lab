@@ -15,7 +15,7 @@ fanout
 mgmt_subnet_mask_length=22
 
 [sonic_seastone_dx010]
-lab-ignw-seastone-dut-li1	ansible_host=10.50.0.8	ansible_ssh_user=admin	ansible_ssh_pass=YourPaSsWoRd
+lab-ignw-seastone-dut-li1	ansible_host=10.50.0.8	ansible_ssh_user=admin	ansible_ssh_pass=YourPaSsWoRd  hwsku=Seastone-DX010
 
 [sonic_seastone_dx010:vars]
 iface_speed=100000
