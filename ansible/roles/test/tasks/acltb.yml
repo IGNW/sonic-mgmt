@@ -51,7 +51,7 @@
 
 - name: Check supported topology
   fail: msg="Invalid testbed_type value '{{testbed_type}}'"
-  when: testbed_type not in ['t1', 't1-lag', 't1-64-lag']
+  when: testbed_type not in ['t1', 't1-8', 't1-lag', 't1-64-lag']
 
 - block:
     - name: Prepare variables for ACL configuration

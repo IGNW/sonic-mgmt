@@ -14,7 +14,7 @@
 
 - name: Expand properties into props
   set_fact: props="{{configuration_properties['spine']}}"
-  when: testbed_type in ['t1', 't1-lag', 't1-64-lag']
+  when: testbed_type in ['t1', 't1-8', 't1-lag', 't1-64-lag']
 
 - name: Expand properties into props
   set_fact: props="{{configuration_properties['common']}}"

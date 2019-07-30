@@ -32,8 +32,8 @@
         },
         "Seastone": {
             "user": "admin",
-            "passwd": ["YourPaSsWoRd"],
-            "enable": ["YourPaSsWoRd"] 
+            "passwd": ["YourPaSsWoRd", "broadcom"],
+            "enable": ["YourPaSsWoRd", "broadcom"] 
         },
         "Test_Server": {
             "user": "ignw",
