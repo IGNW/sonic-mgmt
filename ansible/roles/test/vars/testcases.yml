@@ -8,13 +8,13 @@ testcases:
 
     arp:
       filename: arpall.yml
-      topologies: [ptf32, ptf64, t1, t1-8, t1-lag, t1-64-lag]
+      topologies: [ ptf32, ptf64, t1, t1-8, t1-lag, t1-64-lag]
       required_vars:
           ptf_host:
 
     bgp_fact:
       filename: bgp_fact.yml
-      topologies: [t0, t0-16, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag]
+      topologies: [t0, t0-8, t0-16, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag]
 
     bgp_gr_helper:
       filename: bgp_gr_helper.yml
@@ -40,7 +40,7 @@ testcases:
 
     continuous_reboot:
       filename: continuous_reboot.yml
-      topologies: [t0, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag]
+      topologies: [t0, t0-8, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag]
 
     copp:
       filename: copp.yml
@@ -103,7 +103,7 @@ testcases:
 
     fib:
       filename: simple-fib.yml
-      topologies: [t0, t0-16, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag]
+      topologies: [t0, t0-8, t0-16, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag]
       required_vars:
           ptf_host:
           testbed_type:
@@ -158,7 +158,7 @@ testcases:
 
     mem_check:
       filename: mem_check.yml
-      topologies: [t0, t0-16, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
+      topologies: [t0, t0-8, t0-16, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
 
     mtu:
       filename: mtu.yml
@@ -175,11 +175,11 @@ testcases:
 
     neighbour_mac_noptf:
       filename: neighbour-mac-noptf.yml
-      topologies: [t0, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
+      topologies: [t0, t0-8, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
 
     ntp:
       filename: ntp.yml
-      topologies: [t0, t0-56, t0-64, t0-64-32, t0-116, t1, t1-lag, t1-64-lag, ptf32, ptf64]
+      topologies: [t0, t0-8, t0-56, t0-64, t0-64-32, t0-116, t1, t1-lag, t1-64-lag, ptf32, ptf64]
 
     pfc_wd:
       filename: pfc_wd.yml
@@ -187,7 +187,7 @@ testcases:
 
     port_toggle:
       filename: port_toggle.yml
-      topologies: [t0, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
+      topologies: [t0, t0-8, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
 
     qos:
       filename: qos.yml
@@ -195,19 +195,19 @@ testcases:
 
     reboot:
       filename: reboot.yml
-      topologies: [t0, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
+      topologies: [t0, t0-8, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
 
     repeat_harness:
       filename: repeat_harness.yml
-      topologies: [t0, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
+      topologies: [t0, t0-8, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
 
     restart_swss:
       filename: run_config_cleanup.yml
-      topologies: [t0, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
+      topologies: [t0, t0-8, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
 
     restart_swss_service:
       filename: restart_swss.yml
-      topologies: [t0, t0-16, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
+      topologies: [t0, t0-8, t0-16, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
 
     restart_syncd:
       filename: restart_syncd.yml
@@ -219,11 +219,11 @@ testcases:
 
     service_acl:
       filename: service_acl.yml
-      topologies: [t0, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
+      topologies: [t0, t0-8, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
 
     snmp:
       filename: snmp.yml
-      topologies: [t0, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
+      topologies: [t0, t0-8, t0-56, t0-64, t0-64-32, t0-116, t1, t1-8, t1-lag, t1-64-lag, ptf32, ptf64]
 
     syslog:
       filename: syslog.yml
@@ -265,7 +265,7 @@ testcases:
 
     iface_mode:
       filename: iface_naming_mode.yml
-      topologies: [t0, t0-16, t0-64, t0-64-32, t0-116, t1, t1-8, ptf32, ptf64]
+      topologies: [t0, t0-8, t0-16, t0-64, t0-64-32, t0-116, t1, t1-8, ptf32, ptf64]
       required_vars:
           testbed_type:
 
