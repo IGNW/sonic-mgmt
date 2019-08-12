@@ -127,6 +127,14 @@ ansible-playbook test_sonic.yml -i inventory --limit {DUT_NAME}, --become --tags
 ```
 - Requires switch connected to fanout switch. VM or PTF testbed
 
+##### Log flood test
+```
+ansible-playbook test_sonic.yml -i inventory -e testbed_name={TESTBED_NAME}, -e testcase_name=log_flood
+ansible-playbook test_sonic.yml -i inventory -e testbed_name={TESTBED_NAME}, -e testcase_name=log_flood -e qty_flood_messages=100
+```
+- Can set optional parameter to adjust the number of log messages to send
+- Default is 10,000 messages
+
 ##### NTP test
 ```
 ansible-playbook test_sonic.yml -i inventory --limit {DUT_NAME} --become --tags ntp
