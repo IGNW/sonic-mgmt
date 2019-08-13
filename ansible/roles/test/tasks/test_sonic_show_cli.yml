@@ -54,6 +54,21 @@
       - rule
       - table
 
+  - name: Test show bgp incomplete commands
+    shell: show bgp {{item}}
+    with_items:
+      - community-list
+      - filter-list
+      - large-community-list
+      - prefix-list
+      - route-map
+    register: command_results
+    failed_when: "'Command incomplete' not in command_results.stdout"
+
+  - name: fail here
+    assert:
+      that: False
+
   - name: Test show bgp
     shell: show bgp {{item}}
     with_items:
@@ -64,24 +79,19 @@
       - cidr-only
       - community
       - community-info
-      - community-list
       - dampening
       - detail
-      - filter-list
       - ipv4
       - ipv6
       - json
       - large-community
-      - large-community-list
       - memory
       - neighbors
       - nexthop
       - paths
       - peer-group
-      - prefix-list
       - "regexp /*/"
       - route-leak
-      - route-map
       - statistics
       - summary
       - update-groups
@@ -737,5 +747,4 @@
       - "-h"
       - "-?"
       - interval
-      
-  ignore_errors: yes
+
