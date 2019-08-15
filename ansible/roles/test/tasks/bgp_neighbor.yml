@@ -21,7 +21,7 @@
     - name: Note reason for failure
       debug:
         msg: "The state of all the ipv4 bgp neighbors is not 'Established'.  Fix that before running this test"
-    - name: Force the command to fail after outputing failure message
+    - name: Stop the test here due to pre-condition failure
       assert:
         that: False
 
@@ -50,6 +50,9 @@
     - name: Note reason for failure
       debug:
         msg: "The state of all the ipv6 bgp neighbors is not 'Established'.  Fix that before running this test"
+    - name: Stop the test here due to pre-condition failure
+      assert:
+        that: False
 
 - name: call subtask to test each ipv6 neighbor
   include: roles/test/tasks/bgp_neighbor/bgp_neighbor_test_ipv6_bounce_neighbor.yml neighbor={{ item }}
