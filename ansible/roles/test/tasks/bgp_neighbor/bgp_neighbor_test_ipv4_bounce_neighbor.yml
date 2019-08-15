@@ -35,10 +35,10 @@
     set_fact:
       subtask_bgp_neighbor: "{{ (output.stdout|from_json).ipv4Unicast.peers }}"
 
-  - name: verify bgp neighbor is 'Established' or 'Active'
-    assert: { that: "subtask_bgp_neighbor[neighbor].state in ['Established', 'Active']" }
+  - name: verify bgp neighbor is 'Established' 
+    assert: { that: "subtask_bgp_neighbor[neighbor].state == 'Established'" }
 
-- rescue:
+  rescue:
   - name: start up neighbor links due to failed test
     shell: config bgp startup neighbor {{ neighbor }}
     become: yes
