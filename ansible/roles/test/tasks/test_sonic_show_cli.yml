@@ -1,5 +1,4 @@
 - block:
-
   - name: Test show (Top Level)
     shell: show {{item}}
     with_items:
@@ -17,7 +16,7 @@
       - interfaces
       - ip
       - ipv6
-      # - line
+      - line
       - lldp
       - logging
       - mac
@@ -44,7 +43,12 @@
       - vlan
       - warm_restart
       - watermark
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show acl
     shell: show acl {{item}}
     with_items:
@@ -53,22 +57,29 @@
       - "-?"
       - rule
       - table
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp incomplete commands
     shell: show bgp {{item}}
     with_items:
       - community-list
+      - dampening
       - filter-list
       - large-community-list
       - prefix-list
       - route-map
     register: command_results
     failed_when: "'Command incomplete' not in command_results.stdout"
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
-  - name: fail here
-    assert:
-      that: False
-
+- block:
   - name: Test show bgp
     shell: show bgp {{item}}
     with_items:
@@ -79,7 +90,6 @@
       - cidr-only
       - community
       - community-info
-      - dampening
       - detail
       - ipv4
       - ipv6
@@ -99,7 +109,12 @@
       - views
       - vrf
       - vrfs
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp cidr-only
     shell: show bgp cidr-only {{item}}
     with_items:
@@ -107,7 +122,27 @@
       - "-h"
       - "-?"
       - json
-  
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
+  - name: Test show bgp community with ambiguous commands
+    shell: show bgp community {{item}}
+    with_items:
+      - accept-own-nexthop
+      - local-AS
+      - no-advertise
+      - no-export
+    register: command_results
+    failed_when: "'Ambiguous command' not in command_results.stdout"
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
   - name: Test show bgp community 
     shell: show bgp community {{item}}
     with_items:
@@ -115,20 +150,21 @@
       - "-h"
       - "-?"
       - accept-own
-      - accept-own-nexthop
       - blackhole
       - exact-match
       - graceful-shutdown
       - json
       - llgr-stale
-      - local-AS
-      - no-advertise
-      - no-export
       - no-llgr
       - route-filter-translated-v4
       - route-filter-translated-v6
       - route-filter-v4
-  
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
   - name: Test show bgp community accept-own
     shell: show bgp community accept-own {{item}}
     with_items:
@@ -137,17 +173,38 @@
       - "-?"
       - exact-match
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
+  - name: Test show bgp community accept-own-nexthop ambiguous command
+    shell: show bgp community accept-own-nexthop {{item}}
+    with_items:
+      - exact-match
+    register: command_results
+    failed_when: "'Ambiguous command' not in command_results.stdout"
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
   - name: Test show bgp community accept-own-nexthop
     shell: show bgp community accept-own-nexthop {{item}}
     with_items:
       - "--help"
       - "-h"
       - "-?"
-      - exact-match
       - json
       - route-filter-v6
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp community blackhole
     shell: show bgp community blackhole {{item}}    
     with_items:
@@ -156,7 +213,12 @@
       - "-?"
       - exact-match
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp community exact-match
     shell: show bgp community exact-match {{item}}
     with_items:
@@ -164,7 +226,12 @@
       - "-h"
       - "-?"
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp community graceful-shutdown
     shell: show bgp community graceful-shutdown {{item}}
     with_items:
@@ -174,7 +241,12 @@
       - exact-match
       - json
       - no-peer
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp community graceful-shutdown
     shell: show bgp community graceful-shutdown exact-match {{item}}
     with_items: 
@@ -182,7 +254,12 @@
       - "-h"
       - "-?"
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp community graceful-shutdown no-peer
     shell: show bgp community graceful-shutdown no-peer {{item}}
     with_items: 
@@ -190,7 +267,12 @@
       - "-h"
       - "-?"
       - exact-match
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp community llgr-stale
     shell: show bgp community llgr-stale {{item}}
     with_items:
@@ -199,34 +281,87 @@
       - "-?"
       - exact-match
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
+  - name: Test show bgp community local-AS ambiguous command
+    shell: show bgp community local-AS {{item}}      
+    with_items: 
+      - exact-match
+    register: command_results
+    failed_when: "'Ambiguous command' not in command_results.stdout"
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
   - name: Test show bgp community local-AS
     shell: show bgp community local-AS {{item}}      
     with_items: 
       - "--help"
       - "-h"
       - "-?"
-      - exact-match
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
+  - name: Test show bgp community no-advertise ambiguous command
+    shell: show bgp community no-advertise {{item}}      
+    with_items:
+      - exact-match
+    register: command_results
+    failed_when: "'Ambiguous command' not in command_results.stdout"
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
   - name: Test show bgp community no-advertise
     shell: show bgp community no-advertise {{item}}      
     with_items:
       - "--help"
       - "-h"
       - "-?"
-      - exact-match
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
+  - name: Test show bgp community no-export ambiguous command
+    shell: show bgp community no-export {{item}}
+    with_items:
+      - exact-match
+    register: command_results
+    failed_when: "'Ambiguous command' not in command_results.stdout"
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
   - name: Test show bgp community no-export
     shell: show bgp community no-export {{item}}
     with_items:
       - "--help"
       - "-h"
       - "-?"
-      - exact-match
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp community no-llgr
     shell: show bgp community no-llgr {{item}}
     with_items:
@@ -235,7 +370,12 @@
       - "-?"
       - exact-match
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp community route-filter-translated-v4
     shell: show bgp community route-filter-translated-v4 {{item}}
     with_items:
@@ -244,7 +384,12 @@
       - "-?"
       - exact-match
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp community route-filter-translated-v6
     shell: show bgp community route-filter-translated-v6 {{item}}
     with_items:
@@ -253,7 +398,12 @@
       - "-?"
       - exact-match
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp community route-filter-v4
     shell: show bgp community route-filter-v4 {{item}}
     with_items:
@@ -262,7 +412,12 @@
       - "-?"
       - exact-match
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp dampening
     shell: show bgp dampening {{item}}
     with_items:
@@ -272,7 +427,12 @@
       - dampened-paths
       - flap-statistics
       - parameters
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp detail
     shell: show bgp detail {{item}}
     with_items:
@@ -280,7 +440,30 @@
       - "-h"
       - "-?"    
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
+  - name: Test show bgp ipv4 command incomplete
+    shell: show bgp ipv4 {{item}}
+    with_items:
+      - community-list
+      - dampening
+      - filter-list
+      - large-community-list
+      - prefix-list
+      - regexp
+      - route-map
+    register: command_results
+    failed_when: "'Command incomplete' not in command_results.stdout"
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
   - name: Test show bgp ipv4
     shell: show bgp ipv4 {{item}}
     with_items:
@@ -289,26 +472,42 @@
       - "-?"
       - cidr-only
       - community
-      - community-list
-      - dampening
-      - filter-list
       - flowspec
       - json
       - labeled-unicast
       - large-community
-      - large-community-list
       - multicast
       - neighbors
-      - prefix-list
-      - regexp
       - route-leak
-      - route-map
       - statistics
       - summary
       - unicast
       - update-groups
       - vpn
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
+  - name: Test show bgp ipv6 command incomplete
+    shell: show bgp ipv6 {{item}}
+    with_items:
+      - community-list
+      - dampening
+      - filter-list
+      - large-community-list
+      - prefix-list
+      - regexp
+      - route-map
+    register: command_results
+    failed_when: "'Command incomplete' not in command_results.stdout"
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
   - name: Test show bgp ipv6
     shell: show bgp ipv6 {{item}}
     with_items:
@@ -317,26 +516,24 @@
       - "-?"
       - cidr-only
       - community
-      - community-list
-      - dampening
-      - filter-list
       - flowspec
       - json
       - labeled-unicast
       - large-community
-      - large-community-list
       - multicast
       - neighbors
-      - prefix-list
-      - regexp
       - route-leak
-      - route-map
       - statistics
       - summary
       - unicast
       - update-groups
       - vpn
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp l2vpn
     shell: show bgp l2vpn {{item}}
     with_items:
@@ -352,7 +549,12 @@
       - "-h"
       - "-?"
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp martian
     shell: show bgp martian {{item}}
     with_items:
@@ -360,7 +562,12 @@
       - "-h"
       - "-?"
       - next-hop
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp multicast
     shell: show bgp multicast {{item}}
     with_items:
@@ -368,7 +575,12 @@
       - "-h"
       - "-?"
       - paths
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp neighbors
     shell: show bgp neighbors {{item}}
     with_items:
@@ -376,7 +588,12 @@
       - "-h"
       - "-?"
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp nexthop
     shell: show bgp nexthop {{item}}
     with_items:
@@ -384,7 +601,12 @@
       - "-h"
       - "-?"
       - detail
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp route-leak
     shell: show bgp route-leak {{item}}
     with_items:
@@ -392,7 +614,12 @@
       - "-h"
       - "-?"
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp summary
     shell: show bgp summary {{item}}
     with_items:
@@ -400,7 +627,12 @@
       - "-h"
       - "-?"
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp unicast
     shell: show bgp unicast {{item}}
     with_items:
@@ -408,7 +640,12 @@
       - "-h"
       - "-?"
       - paths
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp update-groups
     shell: show bgp update-groups {{item}}
     with_items:
@@ -419,7 +656,12 @@
       - advertised-routes
       - packet-queue
       - statistics
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp update-groups advertise-queue
     shell: show bgp update-groups advertise-queue {{item}}  
     with_items:
@@ -429,7 +671,12 @@
       - advertise-queue
       - advertised-routes
       - packet-queue
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp update-groups advertised-routes
     shell: show bgp update-groups advertised-routes {{item}}  
     with_items:
@@ -439,7 +686,12 @@
       - advertise-queue
       - advertised-routes
       - packet-queue
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp update-groups packet-queue
     shell: show bgp update-groups packet-queue {{item}}  
     with_items:
@@ -449,7 +701,12 @@
       - advertise-queue
       - advertised-routes
       - packet-queue
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp update-groups statistics
     shell: show bgp update-groups statistics {{item}}  
     with_items:
@@ -459,7 +716,12 @@
       - advertise-queue
       - advertised-routes
       - packet-queue
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp view
     shell: show bgp view {{item}}
     with_items: 
@@ -467,7 +729,12 @@
       - "-h"
       - "-?"
       - all
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp vpn
     shell: show bgp vpn {{item}}
     with_items:
@@ -475,7 +742,12 @@
       - "-h"
       - "-?"
       - paths
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp vrf
     shell: show bgp vrf {{item}}
     with_items:
@@ -483,7 +755,12 @@
       - "-h"
       - "-?"
       - all
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show bgp vrfs
     shell: show bgp vrfs {{item}}
     with_items:
@@ -491,7 +768,12 @@
       - "-h"
       - "-?"
       - json
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show interfaces
     shell: show interfaces {{item}}
     with_items:
@@ -505,7 +787,12 @@
       - portchannel
       - status
       - transceiver
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show interfaces neighbor
     shell: show interfaces neighbor {{item}}
     with_items:
@@ -513,7 +800,12 @@
       - "-h"
       - "-?"
       - expected
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show interfaces transceiver
     shell: show interfaces transceiver {{item}}
     with_items:
@@ -523,7 +815,12 @@
       - eeprom
       - lpmode
       - presence
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show ip
     shell: show ip {{item}}
     with_items:
@@ -534,7 +831,12 @@
       - prefix-list
       - protocol
       - route
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show ip prefix-list
     shell: show ip prefix-list {{item}}
     with_items:
@@ -543,8 +845,26 @@
       - "-?"
       - detail
       - summary
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
-  - name: Test shopw ip route
+- block:
+  - name: Test show ip route command incomplete
+    shell: show ip route {{item}}
+    with_items:
+      - tag
+      - vrf
+    register: command_results
+    failed_when: "'Command incomplete' not in command_results.stdout"
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
+  - name: Test show ip route
     shell: show ip route {{item}}
     with_items:
       - "--help"
@@ -565,10 +885,13 @@
       - summary
       - supernets-only
       - table
-      - tag
       - vnc
-      - vrf
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show ipv6
     shell: show ipv6 {{item}}
     with_items: 
@@ -578,7 +901,25 @@
       - interfaces
       - protocol
       - route
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
+  - name: Test show ipv6 route command incomplete
+    shell: show ipv6 route {{item}}
+    with_items:
+      - tag
+      - vrf
+    register: command_results
+    failed_when: "'Command incomplete' not in command_results.stdout"
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
   - name: Test show ipv6 route
     shell: show ipv6 route {{item}}
     with_items:
@@ -598,10 +939,13 @@
       - static
       - summary
       - table
-      - tag
       - vnc
-      - vrf
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show lldp
     shell: show lldp {{item}}
     with_items:
@@ -610,7 +954,12 @@
       - "-?"
       - neighbors
       - table
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show pfc
     shell: show pfc {{item}}
     with_items:
@@ -618,8 +967,13 @@
       - "-h"
       - "-?"
       - counters
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
-  - name: Test shopw platform
+- block:
+  - name: Test show platform
     shell: show platform {{item}}
     with_items:
       - "--help"
@@ -628,7 +982,12 @@
       - psustatus
       - summary
       - syseeprom
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name:  Test show priority-group
     shell: show priority-group {{item}}
     with_items:
@@ -637,7 +996,12 @@
       - "-?"
       - persistent-watermark
       - watermark
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show priority-group persistent-watermark
     shell: show priority-group persistent-watermark {{item}}
     with_items:
@@ -646,7 +1010,12 @@
       - "-?"
       - headroom
       - shared
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show priority-group watermark
     shell: show priority-group watermark {{item}}
     with_items:
@@ -655,7 +1024,12 @@
       - "-?"
       - headroom
       - shared
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show processes
     shell: show processes {{item}}
     with_items:
@@ -665,7 +1039,12 @@
       - cpu
       - memory
       - summary
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show queue
     shell: show queue {{item}}
     with_items:
@@ -675,7 +1054,12 @@
       - counters
       - persistent-watermark
       - watermark
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show queue persistent-watermark
     shell: show queue persistent-watermark {{item}}
     with_items:
@@ -684,7 +1068,12 @@
       - "-?"
       - multicast
       - unicast
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show queue watermark
     shell: show queue watermark {{item}}
     with_items:
@@ -693,7 +1082,12 @@
       - "-?"
       - multicast
       - unicast
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show runningconfiguration
     shell: show runningconfiguration {{item}}
     with_items:
@@ -705,7 +1099,12 @@
       - interfaces
       - ntp
       - snmp
-  
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
   - name: Test show startupconfiguration
     shell: show startupconfiguration {{item}}
     with_items:
@@ -713,7 +1112,12 @@
       - "-h"
       - "-?"
       - bgp
-  
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
   - name: Test show vlan
     shell: show vlan {{item}}
     with_items:
@@ -722,7 +1126,12 @@
       - "-?"
       - brief
       - config
-  
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
   - name: Test show warm_restart
     shell: show warm_restart {{item}}
     with_items:
@@ -731,7 +1140,12 @@
       - "-?"
       - config
       - state
-  
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
+
+- block:
   - name: Test show watermark
     shell: show watermark {{item}}
     with_items:
@@ -739,7 +1153,12 @@
       - "-h"
       - "-?"
       - telemetry
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
+- block:
   - name: Test show watermark telemetry
     shell: show watermark telemetry {{item}}
     with_items:
@@ -747,4 +1166,8 @@
       - "-h"
       - "-?"
       - interval
+  rescue:
+    - name: Failed item
+      debug:
+        msg: "A command has failed"
 
