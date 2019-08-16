@@ -1,0 +1,10 @@
+- name: test
+  debug: 
+    msg: this is a debug
+
+- name: import file
+  include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml command={{ item }}
+  with_items: 
+    - show
+    - show clock
+
