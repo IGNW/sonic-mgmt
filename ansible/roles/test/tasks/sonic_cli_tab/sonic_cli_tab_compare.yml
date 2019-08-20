@@ -4,7 +4,7 @@
     set_fact:
       command: "{{ item.key }}"
       autocomplete: "{{ item.value }}"
-    with_dict: item
+    with_dict: data 
 
   # This command prints the command followed by 2 tabs and then ctrl+u to clear the input
   - name: Execute the command "{{ command }}" followed by [tab] [tab] 
