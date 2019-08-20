@@ -1,10 +1,142 @@
-- name: test
-  debug: 
-    msg: this is a debug
+# Enter all commands to be tab completed in the dictionary in this step.
+#
+# If the command should provide output on tab completion, set the value to `True`
+# If the command will just display the current directory when tab completing, enter `False`
+- name: set commands to try and expected results
+  set_fact:
+    sonic_commands:
+      top_level:
+        show: True
+        sonic-clear: True
+      show: 
+        show aaa: False
+        show acl: True
+        show arp: False
+        show bgp: False
+        show clock: False
+        show ecn: False
+        show environment: False
+        show interfaces: True
+        show ip: True
+        show ipv6: True
+        show line: False
+        show lldp: True
+        show logging: False
+        show mac: False
+        show mirror_session: False
+        show mmu: False 
+        show ndp: False
+        show ntp: False
+        show pfc: True
+        show platform: True
+        show priority-group: True
+        show processes: True
+        show queue: True
+        show reboot-cause: False
+        show route-map: False
+        show runningconfiguration: True
+        show services: False
+        show startupconfiguration: True
+        show system-memory: False
+        show tacacs: False
+        show techsupport: False
+        show uptime: False
+        show users: False
+        show version: False
+        show vlan: True
+        show warm_restart: True
+        show watermark: True
+      show_acl:
+        show acl rule: False
+        show acl table: False
+      show_bgp:
+        show bgp attribute-info: False
+        show bgp cidr-only: False
+        show bgp community: False
+        show bgp community-info: False
+        show bgp community-list: False
+        show bgp dampening: False
+        show bgp detail: False
+        show bgp filter-list: False
+        show bgp ipv4: False
+        show bgp ipv6: False
+        show bgp json: False
+        show bgp large-community: False
+        show bgp large-community-list: False
+        show bgp memory: False
+        show bgp neighbors: False
+        show bgp nexthop: False
+        show bgp paths: False
+        show bgp peer-group: False
+        show bgp prefix-list: False
+        show bgp regexp: False
+        show bgp route-leak: False
+        show bgp route-map: False
+        show bgp statistics: False
+        show bgp summary: False
+        show bgp update-groups: False
+        show bgp view: False
+        show bgp views: False
+        show bgp vrf: False
+        show bgp vrfs: False
+      show_bgp_cidr_only:
+        show bgp cidr-only json: False
+      show_bgp_community:
+        show bgp community accept-own: False
+        show bgp community accept-own-nexthop: False
+        show bgp community blackhole: False
+        show bgp community exact-match: False
+        show bgp community graceful-shutdown: False
+        show bgp community json: False
+        show bgp community llgr-stale: False
+        show bgp community local-AS: False
+        show bgp community no-advertise: False
+        show bgp community no-export: False
+        show bgp community route-filter-translated-v4: False
+        show bgp community route-filter-translated-v6: False
+        show bgp community iroute-filter-v4: False
+      show_bgp_community_accept_own:
+        show bgp community accept-own exact-match: False
+        show bgp community accept-own json: False
+      show_bgp_community_accept_own_nexthop:
+        show bgp community accept-own-nexthop exact-match: False
+        show bgp community accept-own-nexthop json: False
+        show bgp community accept-own-nexthop : False
 
-- name: import file
-  include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml command={{ item }}
-  with_items: 
-    - show
-    - show clock
+- block:
+  - name: create a file to use in verification of the commands
+    copy:
+      content: ""
+      dest: ~/testfile.deleteme
+      force: no
+
+  - name: test top level commands 
+    include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml command={{ item.key }} expect_tab_fail={{ item.value }}
+    with_dict: sonic_commands.top_level
+  
+  - name: test show commands 
+    include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml command={{ item.key }} expect_tab_fail={{ item.value }}
+    with_dict: sonic_commands.show
+  
+  - name: test show_acl commands 
+    include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml command={{ item.key }} expect_tab_fail={{ item.value }}
+    with_dict: sonic_commands.show_acl
+  
+  - name: test show_bgp commands 
+    include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml command={{ item.key }} expect_tab_fail={{ item.value }}
+    with_dict: sonic_commands.show_bgp
+  
+  - name: test show_bgp_cidr_only commands 
+    include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml command={{ item.key }} expect_tab_fail={{ item.value }}
+    with_dict: sonic_commands.show_bgp_cidr_only
+  
+  - name: test show_bgp commands 
+    include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml command={{ item.key }} expect_tab_fail={{ item.value }}
+    with_dict: sonic_commands.show_bgp_community
+
+  always:
+  - name: delete the verification file 
+    file:
+      state: absent
+      path: ~/testfile.deleteme
 

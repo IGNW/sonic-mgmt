@@ -1,29 +1,26 @@
-- name: test
-  debug:
-    var: command
-
 - block:
-  - name: show question
-    shell: "{{ command }}"
-    register: question_command_output
-
-  - name: output results
-    debug:
-      var: question_command_output.stdout
-
-  - name: show command tab tab
-    raw: "echo {{ command }} $'\t'$'\t' | bash -i 2>&1"
+  # This will exercize the tab autocomplete but should prevent execution of any commands
+  # This also has the added benefit of making long running show commands not execute so the play is faster
+  - name: Execute the command '{{ command }}' followed by [tab] [tab] 
+    raw: "echo {{ command }} $'\t'$'\t' fake | bash -i 2>&1"
     register: tab_command_output
-    
-  - name: outpt tab results
-    debug: 
-      var: tab_command_output.stdout
+    failed_when: > 
+      ('testfile.deleteme' not in tab_command_output.stdout) and
+      ('Error: Got unexpected extra argument' not in tab_command_output.stdout) and
+      ('Error: No such command' not in tab_command_output.stdout)
 
-  - assert:
-      that: question_command_output.stdout == tab_command_output.stdout
-  
+  - name: verify 'testfile.deleteme' not in the output of {{ item.key }}
+    assert:
+      that: "'testfile.deleteme' not in tab_command_output.stdout"
+    when: "{{ item.value }} == True"
+    
+  - name: verify 'testfile.deleteme' in the output of {{ item.key }} 
+    assert:
+      that: "'testfile.deleteme' in tab_command_output.stdout"
+    when: "{{ item.value }} == False"
+
   rescue:
   - name: output
     debug:
-      msg: it failed
+      msg: the command failed
 
