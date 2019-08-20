@@ -1,26 +1,33 @@
+# This will exercize the tab autocomplete but should prevent execution of any commands
 - block:
-  # This will exercize the tab autocomplete but should prevent execution of any commands
-  # This also has the added benefit of making long running show commands not execute so the play is faster
-  - name: Execute the command '{{ command }}' followed by [tab] [tab] 
-    raw: "echo {{ command }} $'\t'$'\t' fake | bash -i 2>&1"
-    register: tab_command_output
-    failed_when: > 
-      ('testfile.deleteme' not in tab_command_output.stdout) and
-      ('Error: Got unexpected extra argument' not in tab_command_output.stdout) and
-      ('Error: No such command' not in tab_command_output.stdout)
+  - name: set values
+    set_fact:
+      command: "{{ item.key }}"
+      autocomplete: "{{ item.value }}"
+    with_dict: item
 
-  - name: verify 'testfile.deleteme' not in the output of {{ item.key }}
+  # This command prints the command followed by 2 tabs and then ctrl+u to clear the input
+  - name: Execute the command "{{ command }}" followed by [tab] [tab] 
+    raw: "printf '{{ command }} \x09\x09\x15' | bash -i 2>&1"
+    register: tab_command_output
+
+  # When the object is true, verify something other than the directory is in stdout
+  - name: verify 'testfile.deleteme' not in the output of {{ command }}
     assert:
       that: "'testfile.deleteme' not in tab_command_output.stdout"
-    when: "{{ item.value }} == True"
-    
-  - name: verify 'testfile.deleteme' in the output of {{ item.key }} 
+    when: "{{ autocomplete }} == True"
+
+  # When the object is false, verify the directory is in the output  
+  - name: verify 'testfile.deleteme' in the output of {{ command }} 
     assert:
       that: "'testfile.deleteme' in tab_command_output.stdout"
-    when: "{{ item.value }} == False"
+    when: "{{ autocomplete }} == False"
 
   rescue:
-  - name: output
+  - name: Error message
     debug:
-      msg: the command failed
+      msg: "the command '{{ command }}' failed"
 
+  - name: Variable Dump
+    debug:
+      var: tab_command_output
