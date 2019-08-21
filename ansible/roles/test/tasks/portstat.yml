@@ -24,7 +24,7 @@
     shell: portstat -c
 
   - name: wait a few seconds for data to repopulate
-    wait:
+    pause:
       seconds: 5
 
   - name: pull current portstat
@@ -42,28 +42,57 @@
       after_rx_ok: "{{ portstat_eth0.split()[2].replace(',','') }}"
       after_tx_ok: "{{ portstat_eth0.split()[9].replace(',','') }}"
 
-  - name: Assert that the cleared counter is less than the current counter
+  - name: Assert that the cleared rx counter is less than the current counter
     assert:
-      that: before_rx_ok > after_rx_ok
+      that: "{{ before_rx_ok|int }}  > {{ after_rx_ok|int }}"
+      msg: "'before_rx_ok: {{ before_rx_ok }}' is not greater than 'after_rx_ok: {{ after_rx_ok }}'"
   
-  - name: Assert that the cleared counter is less than the current counter
+  - name: Assert that the cleared tx counter is less than the current counter
     assert:
-      that: before_tx_ok > after_tx_ok
+      that: "{{ before_tx_ok|int }} > {{ after_tx_ok|int }}"
+      msg: "'before_tx_ok: {{ before_tx_ok }}' is not greater than 'after_tx_ok: {{ after_tx_ok }}'"
 
- 
+  rescue:
+  - debug:
+      msg: "A failure occured"
+
+- block:
+  # This test runs the delete all command once everything is deleted
+  # This test fails as of the writing of this test
+
+  # Makes sure all tags are cleared out
+  - name: Clear out all tags
+    shell: portstat -D
+    ignore_errors: True
+
+  - name: Clear out all tags when none exist      #This test fails
+    shell: portstat -D
+    register: out
+
+  rescue:
+  - name: Display output on failure
+    debug:
+      var: out
+
+
+# This test verifies the following command versions don't cause tracebacks 
 - block:
   - name: list of commands to run
     set_fact:
       portstat_commands:
-       - portstat -D                                # If the log file is missing, will cause a traceback
-       #- portstat -c                                # Clear stats
-       #- portstat -j | python -m json.tool          # Test json output
-       #- portstat -r                                # Verify raw output is obtained
+       - portstat -h
+       - portstat --help
+       - portstat
+       - portstat -v
+       - portstat --version
+       - portstat -j          #This test fails
+       - portstat --json      #This test fails
+       - portstat -r          #This test fails
+       - portstat --raw       #This test fails
+
        #- portstat -a                                # Display all stat counters
        #- portstat -p 30                             # Display stats for a 30 second period
        #- portstat -c -t test                        # Clear counters and tag the file as test
-       #- portstat -j -t test | python -m json.tool  # Test output while tagging and marking as json
-       #- portstat -r -t test                        # Output raw data and tag as test
        #- portstat -a -t test                        # Output all data and tag as test
        #- portstat -p 30 -t test                     # Output for 30 seconds and tag as test
        #- portstat -d -t test                        # Clear the stats for the sepecified tag
