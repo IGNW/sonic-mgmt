@@ -4,9 +4,8 @@
 # If the command will just display the current directory when tab completing, enter `False`
 - name: set commands to try and expected results
   set_fact:
-    sonic_commands:
+    sonic_show_commands:
       - show: True
-      - sonic-clear: True
       - show aaa: False
       - show acl: True
       - show arp: False
@@ -15,6 +14,7 @@
       - show ecn: False
       - show environment: False
       - show interfaces: True
+
       - show ip: True
       - show ipv6: True
       - show line: False
@@ -25,6 +25,7 @@
       - show mmu: False 
       - show ndp: False
       - show ntp: False
+
       - show pfc: True
       - show platform: True
       - show priority-group: True
@@ -35,6 +36,7 @@
       - show runningconfiguration: True
       - show services: False
       - show startupconfiguration: True
+
       - show system-memory: False
       - show tacacs: False
       - show techsupport: False
@@ -45,6 +47,7 @@
       - show warm_restart: True
       - show watermark: True
       - show acl rule: False
+
       - show acl table: False
       - show bgp attribute-info: False
       - show bgp cidr-only: False
@@ -55,6 +58,7 @@
       - show bgp detail: False
       - show bgp filter-list: False
       - show bgp ipv4: False
+
       - show bgp ipv6: False
       - show bgp json: False
       - show bgp large-community: False
@@ -65,6 +69,7 @@
       - show bgp paths: False
       - show bgp peer-group: False
       - show bgp prefix-list: False
+
       - show bgp regexp: False
       - show bgp route-leak: False
       - show bgp route-map: False
@@ -75,6 +80,7 @@
       - show bgp views: False
       - show bgp vrf: False
       - show bgp vrfs: False
+
       - show bgp cidr-only json: False
       - show bgp community accept-own: False
       - show bgp community accept-own-nexthop: False
@@ -85,6 +91,7 @@
       - show bgp community llgr-stale: False
       - show bgp community local-AS: False
       - show bgp community no-advertise: False
+
       - show bgp community no-export: False
       - show bgp community route-filter-translated-v4: False
       - show bgp community route-filter-translated-v6: False
@@ -95,6 +102,7 @@
       - show bgp community accept-own-nexthop json: False
       - show bgp community accept-own-nexthop : False
       - show bgp community blackhole exact-match: False
+
       - show bgp community blackhole json: False
       - show bgp community exact-match json: False
       - show bgp community graceful-shutdown exact-match: False
@@ -106,6 +114,7 @@
       - show bgp community llgr-stale json: False
       - show bgp community local-AS exact-match: False
       - show bgp community local-AS json: False
+
       - show bgp community no-advertise exact-match: False
       - show bgp community no-advertise json: False
       - show bgp community no-export exact-match: False
@@ -116,6 +125,7 @@
       - show bgp community route-filter-translated-v4 json: False
       - show bgp community route-filter-translated-v6 exact-match: False
       - show bgp community route-filter-translated-v6 json: False
+
       - show bgp community route-filter-v4 exact-match: False
       - show bgp community route-filter-v4 json: False
       - show bgp dampening dampened-paths: False
@@ -126,6 +136,7 @@
       - show bgp ipv4 community: False
       - show bgp ipv4 community-list: False
       - show bgp ipv4 dampening: False
+
       - show bgp ipv4 filter-list: False
       - show bgp ipv4 flowspec: False
       - show bgp ipv4 json: False
@@ -136,6 +147,7 @@
       - show bgp ipv4 neighbors: False
       - show bgp ipv4 prefix-list: False
       - show bgp ipv4 regexp: False
+
       - show bgp ipv4 route-leak: False
       - show bgp ipv4 route-map: False
       - show bgp ipv4 statistics: False
@@ -146,6 +158,7 @@
       - show bgp ipv6 cidr-only: False
       - show bgp ipv6 community: False
       - show bgp ipv6 community-list: False
+
       - show bgp ipv6 dampening: False
       - show bgp ipv6 filter-list: False
       - show bgp ipv6 flowspec: False
@@ -156,6 +169,7 @@
       - show bgp ipv6 multicast: False
       - show bgp ipv6 neighbors: False
       - show bgp ipv6 prefix-list: False
+
       - show bgp ipv6 regexp: False
       - show bgp ipv6 route-leak: False
       - show bgp ipv6 route-map: False
@@ -166,6 +180,7 @@
       - show bgp ipv6 vpn: False
       - show bgp l2vpn evpn: False
       - show bgp large-community json: False
+
       - show bgp martian next-hop: False
       - show bgp multicast paths: False
       - show bgp neighbors json: False
@@ -176,6 +191,7 @@
       - show bgp update-groups advertise-queue: False
       - show bgp update-groups advertised-routes: False
       - show bgp update-groups packet-queue: False
+
       - show bgp update-groups statistics: False
       - show bgp update-groups advertise-queue advertise-queue: False
       - show bgp update-groups advertise-queue advertised-routes: False
@@ -186,6 +202,7 @@
       - show bgp update-groups packet-queue advertise-queue: False
       - show bgp update-groups packet-queue advertised-routes: False
       - show bgp update-groups packet-queue packet-queue: False
+
       - show bgp update-groups statistics advertise-queue: False
       - show bgp update-groups statistics advertised-routes: False
       - show bgp update-groups statistics packet-queue: False
@@ -196,6 +213,7 @@
       - show interfaces counters: True
       - show interfaces description: False
       - show interfaces naming_mode: False
+
       - show interfaces neighbor: True
       - show interfaces portchannel: False
       - show interfaces status: False
@@ -206,6 +224,7 @@
       - show interfaces transceiver presence: False
       - show ip interfaces: False
       - show ip prefix-list: False
+
       - show ip protocol: False
       - show ip route: False
       - show ip prefix-list detail: False
@@ -216,6 +235,7 @@
       - show ip route eigrp: False
       - show ip route isis: False
       - show ip route json: False
+
       - show ip route kernel: False
       - show ip route nhrp: False
       - show ip route ospf: False
@@ -226,6 +246,7 @@
       - show ip route supernets-only: False
       - show ip route table: False
       - show ip route tag: False
+
       - show ip route vnc: False
       - show ip route vrf: False
       - show ipv6 interfaces: False
@@ -236,6 +257,7 @@
       - show ipv6 route connected: False
       - show ipv6 route isis: False
       - show ipv6 route json: False
+
       - show ipv6 route kernel: False
       - show ipv6 route nhrp: False
       - show ipv6 route ospf6: False
@@ -246,6 +268,7 @@
       - show ipv6 route summary: False
       - show ipv6 route table: False
       - show ipv6 route tag: False
+
       - show ipv6 route vnc: False
       - show ipv6 route vrf: False
       - show lldp neighbors: False
@@ -256,6 +279,7 @@
       - show platform syseeprom: False
       - show priority-group persistent-watermark: True
       - show priority-group watermark: True
+
       - show priority-group persistent-watermark headroom: False
       - show priority-group persistent-watermark shared: False
       - show priority-group watermark headroom: False
@@ -266,6 +290,7 @@
       - show queue counters: False
       - show queue persistent-watermark: True
       - show queue watermark: True
+
       - show queue persistent-watermark multicast: False
       - show queue persistent-watermark unicast: False
       - show queue watermark multicast: False
@@ -276,12 +301,40 @@
       - show runningconfiguration ntp: False
       - show runningconfiguration snmp: False
       - show startupconfiguration bgp: False
+
       - show vlan brief: False
       - show vlan config: False
       - show warm_restart config: False
       - show warm_restart state: False
       - show watermark telemetry: True
       - show watermark telemetry interval: False
+
+    sonic_clear_commands:
+      - sonic-clear: True
+      - sonic-clear arp: False
+      - sonic-clear counters: False
+      - sonic-clear line: False
+      - sonic-clear pfccounters: False
+      - sonic-clear rifcounters: False
+      - sonic-clear bgp: False
+      - sonic-clear fdb: True
+      - sonic-clear fdb all: False
+      - sonic-clear ipv6: False
+
+      - sonic-clear ndp: False
+      - sonic-clear priority-group: True
+      - sonic-clear queuecounters: False
+      - sonic-clear ip: True
+      - sonic-clear ip arp: False
+      - sonic-clear ip ndp: False
+      - sonic-clear queue: True
+      - sonic-clear queue persistent-watermark: True
+      - sonic-clear queue watermark: True
+      - sonic-clear queue persistent-watermark multicast: False
+
+      - sonic-clear queue persistent-watermark unicast : False
+      - sonic-clear queue watermark multicast: False
+      - sonic-clear queue watermark unicast: False
 
 - block:
   - name: create a file to use in verification of the commands
@@ -290,9 +343,13 @@
       dest: ~/testfile.deleteme
       force: no
 
-  - name: test the commands
+  - name: test the show commands
     include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml data={{ item }}
-    with_items: sonic_commands
+    with_items: sonic_show_commands
+
+  - name: test the clear commands
+    include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml data={{ item }}
+    with_items: sonic_clear_commands
 
   always:
   - name: delete the verification file 
