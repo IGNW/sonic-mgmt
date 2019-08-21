@@ -1,43 +1,82 @@
+- name: clear out all files
+  shell: portstat -D 
+  ignore_errors: True
+
 - block:
+  # This test verifies if the portstat -c command works as expected
+  - name: pull current portstat
+    shell: portstat
+    register: before_out
 
-  - name: Clear all saved stats prior to tests
-    shell: portstat -D || true
+  - name: Find ethernet0
+    set_fact:
+      portstat_eth0: "{{ item }}"
+    with_items: before_out.stdout_lines
+    when: "'Ethernet0' in item"
 
-  - name: Test portstat clear
+  - name: Pull out RX and TX OK counters
+    set_fact:
+      before_rx_ok: "{{ portstat_eth0.split()[2].replace(',','') }}"
+      before_tx_ok: "{{ portstat_eth0.split()[9].replace(',','') }}"
+
+  # This is the test command
+  - name: Test command to run
     shell: portstat -c
 
-  - name: Test portstat json output
-    shell: portstat -j | python -m json.tool
+  - name: wait a few seconds for data to repopulate
+    wait:
+      seconds: 5
 
-  - name: Test portstat raw output
-    shell: portstat -r
+  - name: pull current portstat
+    shell: portstat
+    register: after_out
 
-  - name: Test portstat all
-    shell: portstat -a
+  - name: Find ethernet0
+    set_fact:
+      portstat_eth0: "{{ item }}"
+    with_items: after_out.stdout_lines
+    when: "'Ethernet0' in item"
 
-  - name: Test portstat period
-    shell: portstat -p 30
+  - name: Pull out RX and TX OK counters
+    set_fact:
+      after_rx_ok: "{{ portstat_eth0.split()[2].replace(',','') }}"
+      after_tx_ok: "{{ portstat_eth0.split()[9].replace(',','') }}"
 
-  - name: Test portstat clear and save stats
-    shell: portstat -c -t test
-
-  - name: Test portstat json output
-    shell: portstat -j -t test | python -m json.tool
-
-  - name: Test portstat raw output
-    shell: porstat -r -t test
-
-  - name: Test portstat all stat counters
-    shell: portstat -a -t test
-
-  - name: Test portstat period
-    shell: portstat -p 30 -t test
-
-  - name: Test deleting counter
-    shell: portstat -d -t test
+  - name: Assert that the cleared counter is less than the current counter
+    assert:
+      that: before_rx_ok > after_rx_ok
   
+  - name: Assert that the cleared counter is less than the current counter
+    assert:
+      that: before_tx_ok > after_tx_ok
+
+ 
+- block:
+  - name: list of commands to run
+    set_fact:
+      portstat_commands:
+       - portstat -D                                # If the log file is missing, will cause a traceback
+       #- portstat -c                                # Clear stats
+       #- portstat -j | python -m json.tool          # Test json output
+       #- portstat -r                                # Verify raw output is obtained
+       #- portstat -a                                # Display all stat counters
+       #- portstat -p 30                             # Display stats for a 30 second period
+       #- portstat -c -t test                        # Clear counters and tag the file as test
+       #- portstat -j -t test | python -m json.tool  # Test output while tagging and marking as json
+       #- portstat -r -t test                        # Output raw data and tag as test
+       #- portstat -a -t test                        # Output all data and tag as test
+       #- portstat -p 30 -t test                     # Output for 30 seconds and tag as test
+       #- portstat -d -t test                        # Clear the stats for the sepecified tag
+
+  - name: Run the commands 
+    shell: "{{ item }}"
+    with_items: portstat_commands
+   
   always:
   - name: Clear and reset counters
     shell: portstat -D
   
-  ignore_errors: true
+  rescue:
+   - name: A command failed
+     debug:
+       msg: One of the commands failed
