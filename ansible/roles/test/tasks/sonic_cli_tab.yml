@@ -1,340 +1,44 @@
 # Enter all commands to be tab completed in the dictionary in this step.
 #
-# If the command should provide output on tab completion, set the value to `True`
-# If the command will just display the current directory when tab completing, enter `False`
+# Commands in this list have been found to have tab completions.  
+
 - name: set commands to try and expected results
   set_fact:
     sonic_show_commands:
-      - show: True
-      - show aaa: False
-      - show acl: True
-      - show arp: False
-      - show bgp: False
-      - show clock: False
-      - show ecn: False
-      - show environment: False
-      - show interfaces: True
-
-      - show ip: True
-      - show ipv6: True
-      - show line: False
-      - show lldp: True
-      - show logging: False
-      - show mac: False
-      - show mirror_session: False
-      - show mmu: False 
-      - show ndp: False
-      - show ntp: False
-
-      - show pfc: True
-      - show platform: True
-      - show priority-group: True
-      - show processes: True
-      - show queue: True
-      - show reboot-cause: False
-      - show route-map: False
-      - show runningconfiguration: True
-      - show services: False
-      - show startupconfiguration: True
-
-      - show system-memory: False
-      - show tacacs: False
-      - show techsupport: False
-      - show uptime: False
-      - show users: False
-      - show version: False
-      - show vlan: True
-      - show warm_restart: True
-      - show watermark: True
-      - show acl rule: False
-
-      - show acl table: False
-      - show bgp attribute-info: False
-      - show bgp cidr-only: False
-      - show bgp community: False
-      - show bgp community-info: False
-      - show bgp community-list: False
-      - show bgp dampening: False
-      - show bgp detail: False
-      - show bgp filter-list: False
-      - show bgp ipv4: False
-
-      - show bgp ipv6: False
-      - show bgp json: False
-      - show bgp large-community: False
-      - show bgp large-community-list: False
-      - show bgp memory: False
-      - show bgp neighbors: False
-      - show bgp nexthop: False
-      - show bgp paths: False
-      - show bgp peer-group: False
-      - show bgp prefix-list: False
-
-      - show bgp regexp: False
-      - show bgp route-leak: False
-      - show bgp route-map: False
-      - show bgp statistics: False
-      - show bgp summary: False
-      - show bgp update-groups: False
-      - show bgp view: False
-      - show bgp views: False
-      - show bgp vrf: False
-      - show bgp vrfs: False
-
-      - show bgp cidr-only json: False
-      - show bgp community accept-own: False
-      - show bgp community accept-own-nexthop: False
-      - show bgp community blackhole: False
-      - show bgp community exact-match: False
-      - show bgp community graceful-shutdown: False
-      - show bgp community json: False
-      - show bgp community llgr-stale: False
-      - show bgp community local-AS: False
-      - show bgp community no-advertise: False
-
-      - show bgp community no-export: False
-      - show bgp community route-filter-translated-v4: False
-      - show bgp community route-filter-translated-v6: False
-      - show bgp community iroute-filter-v4: False
-      - show bgp community accept-own exact-match: False
-      - show bgp community accept-own json: False
-      - show bgp community accept-own-nexthop exact-match: False
-      - show bgp community accept-own-nexthop json: False
-      - show bgp community accept-own-nexthop : False
-      - show bgp community blackhole exact-match: False
-
-      - show bgp community blackhole json: False
-      - show bgp community exact-match json: False
-      - show bgp community graceful-shutdown exact-match: False
-      - show bgp community graceful-shutdown json: False
-      - show bgp community graceful-shutdown no-peer: False
-      - show bgp community graceful-shutdown exact-match json: False
-      - show bgp community graceful-shutdown no-peer exact-match: False
-      - show bgp community llgr-stale exact-match: False
-      - show bgp community llgr-stale json: False
-      - show bgp community local-AS exact-match: False
-      - show bgp community local-AS json: False
-
-      - show bgp community no-advertise exact-match: False
-      - show bgp community no-advertise json: False
-      - show bgp community no-export exact-match: False
-      - show bgp community no-export json: False
-      - show bgp community no-llgr exact-match: False
-      - show bgp community no-llgr json: False
-      - show bgp community route-filter-translated-v4 exact-match: False
-      - show bgp community route-filter-translated-v4 json: False
-      - show bgp community route-filter-translated-v6 exact-match: False
-      - show bgp community route-filter-translated-v6 json: False
-
-      - show bgp community route-filter-v4 exact-match: False
-      - show bgp community route-filter-v4 json: False
-      - show bgp dampening dampened-paths: False
-      - show bgp dampening flap-statistics: False
-      - show bgp dampening parameters: False
-      - show bgp detail json: False
-      - show bgp ipv4 cidr-only: False
-      - show bgp ipv4 community: False
-      - show bgp ipv4 community-list: False
-      - show bgp ipv4 dampening: False
-
-      - show bgp ipv4 filter-list: False
-      - show bgp ipv4 flowspec: False
-      - show bgp ipv4 json: False
-      - show bgp ipv4 labeled-unicast: False
-      - show bgp ipv4 large-community: False
-      - show bgp ipv4 large-community-list: False
-      - show bgp ipv4 multicast: False
-      - show bgp ipv4 neighbors: False
-      - show bgp ipv4 prefix-list: False
-      - show bgp ipv4 regexp: False
-
-      - show bgp ipv4 route-leak: False
-      - show bgp ipv4 route-map: False
-      - show bgp ipv4 statistics: False
-      - show bgp ipv4 summary: False
-      - show bgp ipv4 unicast: False
-      - show bgp ipv4 update-groups: False
-      - show bgp ipv4 vpn: False
-      - show bgp ipv6 cidr-only: False
-      - show bgp ipv6 community: False
-      - show bgp ipv6 community-list: False
-
-      - show bgp ipv6 dampening: False
-      - show bgp ipv6 filter-list: False
-      - show bgp ipv6 flowspec: False
-      - show bgp ipv6 json: False
-      - show bgp ipv6 labeled-unicast: False
-      - show bgp ipv6 large-community: False
-      - show bgp ipv6 large-community-list: False
-      - show bgp ipv6 multicast: False
-      - show bgp ipv6 neighbors: False
-      - show bgp ipv6 prefix-list: False
-
-      - show bgp ipv6 regexp: False
-      - show bgp ipv6 route-leak: False
-      - show bgp ipv6 route-map: False
-      - show bgp ipv6 statistics: False
-      - show bgp ipv6 summary: False
-      - show bgp ipv6 unicast: False
-      - show bgp ipv6 update-groups: False
-      - show bgp ipv6 vpn: False
-      - show bgp l2vpn evpn: False
-      - show bgp large-community json: False
-
-      - show bgp martian next-hop: False
-      - show bgp multicast paths: False
-      - show bgp neighbors json: False
-      - show bgp nexthop detail: False
-      - show bgp route-leak json: False
-      - show bgp summary json: False
-      - show bgp unicast paths: False
-      - show bgp update-groups advertise-queue: False
-      - show bgp update-groups advertised-routes: False
-      - show bgp update-groups packet-queue: False
-
-      - show bgp update-groups statistics: False
-      - show bgp update-groups advertise-queue advertise-queue: False
-      - show bgp update-groups advertise-queue advertised-routes: False
-      - show bgp update-groups advertise-queue packet-queue: False
-      - show bgp update-groups advertised-routes advertise-queue: False
-      - show bgp update-groups advertised-routes advertised-routes: False
-      - show bgp update-groups advertised-routes packet-queue: False
-      - show bgp update-groups packet-queue advertise-queue: False
-      - show bgp update-groups packet-queue advertised-routes: False
-      - show bgp update-groups packet-queue packet-queue: False
-
-      - show bgp update-groups statistics advertise-queue: False
-      - show bgp update-groups statistics advertised-routes: False
-      - show bgp update-groups statistics packet-queue: False
-      - show bgp view all: False
-      - show bgp vpn paths: False
-      - show bgp vrf all: False
-      - show bgp vrfs json: False
-      - show interfaces counters: True
-      - show interfaces description: False
-      - show interfaces naming_mode: False
-
-      - show interfaces neighbor: True
-      - show interfaces portchannel: False
-      - show interfaces status: False
-      - show interfaces transceiver: True
-      - show interfaces neighbor expected: False
-      - show interfaces transceiver eeprom: False
-      - show interfaces transceiver lpmode: False
-      - show interfaces transceiver presence: False
-      - show ip interfaces: False
-      - show ip prefix-list: False
-
-      - show ip protocol: False
-      - show ip route: False
-      - show ip prefix-list detail: False
-      - show ip prefix-list summary: False
-      - show ip route babel: False
-      - show ip route bgp: False
-      - show ip route connected: False
-      - show ip route eigrp: False
-      - show ip route isis: False
-      - show ip route json: False
-
-      - show ip route kernel: False
-      - show ip route nhrp: False
-      - show ip route ospf: False
-      - show ip route rip: False
-      - show ip route sharp: False
-      - show ip route static: False
-      - show ip route summary: False
-      - show ip route supernets-only: False
-      - show ip route table: False
-      - show ip route tag: False
-
-      - show ip route vnc: False
-      - show ip route vrf: False
-      - show ipv6 interfaces: False
-      - show ipv6 protocol: False
-      - show ipv6 route: False
-      - show ipv6 route babel: False
-      - show ipv6 route bgp: False
-      - show ipv6 route connected: False
-      - show ipv6 route isis: False
-      - show ipv6 route json: False
-
-      - show ipv6 route kernel: False
-      - show ipv6 route nhrp: False
-      - show ipv6 route ospf6: False
-      - show ipv6 route ripng: False
-      - show ipv6 route sharp: False
-      - show ipv6 route : False
-      - show ipv6 route static: False
-      - show ipv6 route summary: False
-      - show ipv6 route table: False
-      - show ipv6 route tag: False
-
-      - show ipv6 route vnc: False
-      - show ipv6 route vrf: False
-      - show lldp neighbors: False
-      - show lldp table: False
-      - show pfc counters: False
-      - show platform psustatus: False
-      - show platform summary: False
-      - show platform syseeprom: False
-      - show priority-group persistent-watermark: True
-      - show priority-group watermark: True
-
-      - show priority-group persistent-watermark headroom: False
-      - show priority-group persistent-watermark shared: False
-      - show priority-group watermark headroom: False
-      - show priority-group watermark shared: False
-      - show processes cpu: False
-      - show processes memory: False
-      - show processes summary: False
-      - show queue counters: False
-      - show queue persistent-watermark: True
-      - show queue watermark: True
-
-      - show queue persistent-watermark multicast: False
-      - show queue persistent-watermark unicast: False
-      - show queue watermark multicast: False
-      - show queue watermark unicast: False
-      - show runningconfiguration all: False
-      - show runningconfiguration bgp: False
-      - show runningconfiguration interfaces: False
-      - show runningconfiguration ntp: False
-      - show runningconfiguration snmp: False
-      - show startupconfiguration bgp: False
-
-      - show vlan brief: False
-      - show vlan config: False
-      - show warm_restart config: False
-      - show warm_restart state: False
-      - show watermark telemetry: True
-      - show watermark telemetry interval: False
+      - show
+      - show acl
+      - show bgp  # This test fails as of the writing of this test
+      - show interfaces
+      - show ip
+      - show ipv6
+      - show lldp
+      - show pfc
+      - show platform
+      - show priority-group
+      - show processes
+      - show queue
+      - show runningconfiguration
+      - show startupconfiguration
+      - show vlan
+      - show warm_restart
+      - show watermark
+      - show interfaces counters
+      - show interfaces neighbor
+      - show interfaces transceiver
+      - show priority-group watermark
+      - show queue persistent-watermark
+      - show queue watermark
+      - show watermark telemetry
 
     sonic_clear_commands:
-      - sonic-clear: True
-      - sonic-clear arp: False
-      - sonic-clear counters: False
-      - sonic-clear line: False
-      - sonic-clear pfccounters: False
-      - sonic-clear rifcounters: False
-      - sonic-clear bgp: False
-      - sonic-clear fdb: True
-      - sonic-clear fdb all: False
-      - sonic-clear ipv6: False
-
-      - sonic-clear ndp: False
-      - sonic-clear priority-group: True
-      - sonic-clear queuecounters: False
-      - sonic-clear ip: True
-      - sonic-clear ip arp: False
-      - sonic-clear ip ndp: False
-      - sonic-clear queue: True
-      - sonic-clear queue persistent-watermark: True
-      - sonic-clear queue watermark: True
-      - sonic-clear queue persistent-watermark multicast: False
-
-      - sonic-clear queue persistent-watermark unicast : False
-      - sonic-clear queue watermark multicast: False
-      - sonic-clear queue watermark unicast: False
+      - sonic-clear
+      - sonic-clear bgp   # This test fails as of the writing of this test
+      - sonic-clear fdb
+      - sonic-clear priority-group
+      - sonic-clear ip
+      - sonic-clear queue
+      - sonic-clear queue persistent-watermark
+      - sonic-clear queue watermark
 
 - block:
   - name: create a file to use in verification of the commands
@@ -344,11 +48,11 @@
       force: no
 
   - name: test the show commands
-    include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml data={{ item }}
+    include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml command={{ item }}
     with_items: sonic_show_commands
 
   - name: test the clear commands
-    include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml data={{ item }}
+    include: roles/test/tasks/sonic_cli_tab/sonic_cli_tab_compare.yml command={{ item }}
     with_items: sonic_clear_commands
 
   always:

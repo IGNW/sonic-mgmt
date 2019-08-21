@@ -1,27 +1,15 @@
-# This will exercize the tab autocomplete but should prevent execution of any commands
+# This will exercise the tab autocomplete but should prevent execution of any commands
 - block:
-  - name: set values
-    set_fact:
-      command: "{{ item.key }}"
-      autocomplete: "{{ item.value }}"
-    with_dict: data 
 
   # This command prints the command followed by 2 tabs and then ctrl+u to clear the input
   - name: Execute the command "{{ command }}" followed by [tab] [tab] 
     raw: "printf '{{ command }} \x09\x09\x15' | bash -i 2>&1"
     register: tab_command_output
 
-  # When the object is true, verify something other than the directory is in stdout
+  # Verify something other than the directory is in stdout
   - name: verify 'testfile.deleteme' not in the output of {{ command }}
     assert:
       that: "'testfile.deleteme' not in tab_command_output.stdout"
-    when: "{{ autocomplete }} == True"
-
-  # When the object is false, verify the directory is in the output  
-  - name: verify 'testfile.deleteme' in the output of {{ command }} 
-    assert:
-      that: "'testfile.deleteme' in tab_command_output.stdout"
-    when: "{{ autocomplete }} == False"
 
   rescue:
   - name: Error message
