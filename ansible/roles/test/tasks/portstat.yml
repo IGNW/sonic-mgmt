@@ -1,78 +1,41 @@
-- name: clear out all files
-  shell: portstat -D 
-  ignore_errors: True
+- name: Verify the portstat clear command works
+  # roles/test/tasks/portstat
+  include: portstat/portstat_clear.yml  command={{ item }}
+  with_items:
+    - portstat -c
+    - portstat --clear
 
-- block:
-  # This test verifies if the portstat -c command works as expected
-  - name: pull current portstat
-    shell: portstat
-    register: before_out
+- name: Test portstat delete all when no saved data # This command fails
+  include: portstat/portstat_delete_all_no_saved_stats.yml  command={{ item }}
+  with_items:
+    - portstat -D
+    - portstat --delete-all
 
-  - name: Find ethernet0
-    set_fact:
-      portstat_eth0: "{{ item }}"
-    with_items: before_out.stdout_lines
-    when: "'Ethernet0' in item"
+- name: Test portstat delete all with saved tags
+  include: portstat/portstat_delete_all_stats.yml  command={{ item }}
+  with_items:
+    - portstat -D
+    - portstat --delete-all
 
-  - name: Pull out RX and TX OK counters
-    set_fact:
-      before_rx_ok: "{{ portstat_eth0.split()[2].replace(',','') }}"
-      before_tx_ok: "{{ portstat_eth0.split()[9].replace(',','') }}"
+- name: Test deleting a tag
+  include: portstat/portstat_delete_tag.yml  command={{ item }}
+  with_items:
+    - portstat -d -t
+    - portstat -d --tag 
+    - portstat --delete -t
+    - portstat --delete --tag
 
-  # This is the test command
-  - name: Test command to run
-    shell: portstat -c
+- name: Test display all
+  include: portstat/portstat_all_fields.yml  command={{ item }}
+  with_items:
+    - portstat -a
+    - portstat --all
 
-  - name: wait a few seconds for data to repopulate
-    pause:
-      seconds: 5
-
-  - name: pull current portstat
-    shell: portstat
-    register: after_out
-
-  - name: Find ethernet0
-    set_fact:
-      portstat_eth0: "{{ item }}"
-    with_items: after_out.stdout_lines
-    when: "'Ethernet0' in item"
-
-  - name: Pull out RX and TX OK counters
-    set_fact:
-      after_rx_ok: "{{ portstat_eth0.split()[2].replace(',','') }}"
-      after_tx_ok: "{{ portstat_eth0.split()[9].replace(',','') }}"
-
-  - name: Assert that the cleared rx counter is less than the current counter
-    assert:
-      that: "{{ before_rx_ok|int }}  > {{ after_rx_ok|int }}"
-      msg: "'before_rx_ok: {{ before_rx_ok }}' is not greater than 'after_rx_ok: {{ after_rx_ok }}'"
-  
-  - name: Assert that the cleared tx counter is less than the current counter
-    assert:
-      that: "{{ before_tx_ok|int }} > {{ after_tx_ok|int }}"
-      msg: "'before_tx_ok: {{ before_tx_ok }}' is not greater than 'after_tx_ok: {{ after_tx_ok }}'"
-
-  rescue:
-  - debug:
-      msg: "A failure occured"
-
-- block:
-  # This test runs the delete all command once everything is deleted
-  # This test fails as of the writing of this test
-
-  # Makes sure all tags are cleared out
-  - name: Clear out all tags
-    shell: portstat -D
-    ignore_errors: True
-
-  - name: Clear out all tags when none exist      #This test fails
-    shell: portstat -D
-    register: out
-
-  rescue:
-  - name: Display output on failure
-    debug:
-      var: out
+- name: Test display period
+  include: portstat/portstat_period.yml command={{ item }}
+  with_items:
+    - portstat -p 1
+    - portstat --period 1
 
 
 # This test verifies the following command versions don't cause tracebacks 
