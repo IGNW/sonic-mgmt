@@ -232,6 +232,10 @@ testcases:
     sonic_cli:
       filename: sonic_cli.yml
       topologies: [t0-8, t1-8]
+
+    sonic_cli_tab:
+      filename: sonic_cli_tab.yml
+      topologies: [t0-8, t1-8]
       
     vlan:
       filename: vlantb.yml
