@@ -178,7 +178,7 @@ testcases:
       topologies: [t0, t0-64, t0-64-32, t0-116, t1, t1-lag, t1-64-lag, ptf32, ptf64]
 
     portstat:
-      filename: test_portstat.yml
+      filename: portstat.yml
       topologies: [t0-8, t1-8]
       
     qos:
