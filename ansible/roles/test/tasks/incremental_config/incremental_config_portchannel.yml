@@ -3,57 +3,35 @@
 - name: set initial variables for portchannel test
   set_fact:
     ethernet_portchannel_interfaces: []
+    
 
-# Add and remove a portchannel, add and remove a member
+# Add a portchannel
 - block:
     - name: add a port channel 
       shell: config portchannel add {{ name }} 
       become: yes
     
-    - name: confirm portchannel was added to the interface
+    - name: pull current portchannel status 
       shell: show interfaces portchannel 
       register: out
 
     - name: verify that the portchannel shows up in the output 
       assert:
-        that:  out.stdout | search("PortChannel")
+        that:  out.stdout | search( name )
 
     - name: add members to the portchannel
       shell: config portchannel member add {{ name }} {{ item }}
       become: yes
       with_items: "{{ members }}"
 
-    - name: verify members added to the portchannel
-      shell: show interfaces status
+    - name: pull current portchannel status 
+      shell: show interfaces portchannel
       register: out
-
-  rescue:
-    - name: remove the portchannel on failure
-      shell: config portchannel del {{ name }} 
-      become: yes
-
-# Add and remove a portchannel, add and remove a member
-- block:
-    - name: add a port channel 
-      shell: config portchannel add {{ name }} 
-      become: yes
     
-    - name: confirm portchannel was added to the interface
-      shell: show interfaces portchannel 
-      register: out
-
-    - name: verify that the portchannel shows up in the output 
+    - name: verify that the members show up in the output 
       assert:
-        that:  out.stdout | search("PortChannel")
-
-    - name: add members to the portchannel
-      shell: config portchannel member add {{ name }} {{ item }}
-      become: yes
-      with_items: "{{ members }}"
-
-    - name: verify members added to the portchannel
-      shell: show interfaces status
-      register: out
+        that:  out.stdout | search( item )
+      with_items: members 
 
     - name: pull out lines from output for the portchannel ports
       set_fact:
@@ -72,12 +50,13 @@
       with_items: "{{ members }}"
 
     - name: verify the ports have been removed
-      shell: show interfaces status
+      shell: show interfaces portchannel
       register: out
 
     - name: verify the portchannel name no longer shows up in the output
       assert:
-        that: test_port_channel_name not in out.stdout
+        that: item not in out.stdout
+      with_items: members
 
     - name: remove the portchannel
       shell: config portchannel del {{ name }} 
@@ -89,15 +68,21 @@
 
     - name: verify that the portchannel is not configured
       assert:
-        that: not out.stdout | search("PortChannel")
+        that: not out.stdout | search( name )
 
   rescue:
+    - name: pull output from switch
+      shell: show interface portchannel
+      register: out
+
     - name: remove portchannel members on failure
       shell: config portchannel member del {{ name }} {{ item }}
       become: yes
       with_items: "{{ members }}"
+      when: item in out.stdout
 
     - name: remove the portchannel on failure
       shell: config portchannel del {{ name }} 
       become: yes
+      when: name in out.stdout
 

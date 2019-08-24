@@ -6,23 +6,34 @@
 - name: set initial variables
   set_fact:
     active_eth_iface_list: [] 
+    inactive_eth_iface_list: []
     ethernet_portchannel_interfaces: []
-    test_ipv4_address: 10.200.4.5/31
-    test_ipv6_address: fc00::ff07/126
-    test_port_channel_name: test_pc
-    test_vlan: 100
+    test_ipv4_address: 10.200.4.5/24
+    test_ipv6_address: fc00::aa07/126
+    test_port_channel_name: PortChannel0999
+    test_vlan: 999
 
-- name: create active interface list
+- name: create inactive interface list
   set_fact:
-    active_eth_iface_list: "{{ active_eth_iface_list }} + ['{{ item.device }}']"
-  when: item.active == true and "Ethernet" in item.device 
+    inactive_eth_iface_list: "{{ inactive_eth_iface_list }} + ['{{ item.device }}']"
+  when: item.active == false and "Ethernet" in item.device 
   with_items: "{{ ansible_interface_facts.values() }}"
 
 - name: set test interface variable
   set_fact:
-    test_iface: "{{ active_eth_iface_list[0] }}"
-    test_vlan_iface: "{{ active_eth_iface_list[-1] }}" 
-    test_portchannel_members: ["{{ active_eth_iface_list[0] }}","{{ active_eth_iface_list[-1] }}"]
+    test_iface: "{{ inactive_eth_iface_list[0] }}"
+    test_vlan_iface: "{{ inactive_eth_iface_list[-1] }}" 
+    test_portchannel_members: ["{{ inactive_eth_iface_list[-2] }}","{{ inactive_eth_iface_list[-3] }}"]
+
+- name: "Ansible | List all known variables and facts"
+  debug:
+    var: "{{ item }}"
+  with_items:
+    - active_eth_iface_list
+    - inactive_eth_iface_list 
+    - test_iface
+    - test_vlan_iface
+    - test_portchannel_members
 
 # Add and remove an ipv4 address from an interface
 - name: run ipv4 tests
