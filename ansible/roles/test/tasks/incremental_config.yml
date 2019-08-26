@@ -53,3 +53,8 @@
 # Add and remove a portchannel to the switch
 - name: run portchannel tests
   include: incremental_config/incremental_config_portchannel.yml name={{test_port_channel_name}} members={{test_portchannel_members}}
+
+# Add and remove some acl rules via the incremental updated command
+- name: run acl update tests
+  include: incremental_config/incremental_config_acl_incremental_update.yml
+
