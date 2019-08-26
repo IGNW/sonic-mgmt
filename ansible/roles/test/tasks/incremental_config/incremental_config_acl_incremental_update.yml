@@ -27,9 +27,6 @@
       shell: show acl rule
       register: out
 
-    - debug:
-        var: out
-
     - name: verify the entry was added as expected
       assert:
         that: 
@@ -44,9 +41,6 @@
     - name: get the current state of the roles
       shell: show acl rule
       register: out
-
-    - debug:
-        var: out
 
     - name: verify the entry was added as expected
       assert:
