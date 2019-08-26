@@ -5,7 +5,6 @@
 
 - name: set initial variables
   set_fact:
-    active_eth_iface_list: [] 
     inactive_eth_iface_list: []
     ethernet_portchannel_interfaces: []
     test_ipv4_address: 10.200.4.5/24
@@ -19,9 +18,14 @@
   when: item.active == false and "Ethernet" in item.device 
   with_items: "{{ ansible_interface_facts.values() }}"
 
+- name: verify that there are at least 4 inactive interfaces
+  assert:
+    that: (inactive_eth_iface_list | length) >= 4
+    msg: This test requires at least four inactive Ethernet interfaces
+
 - name: set test interface variable
   set_fact:
-    test_iface: "{{ inactive_eth_iface_list[0] }}"
+    test_ip_iface: "{{ inactive_eth_iface_list[0] }}"
     test_vlan_iface: "{{ inactive_eth_iface_list[-1] }}" 
     test_portchannel_members: ["{{ inactive_eth_iface_list[-2] }}","{{ inactive_eth_iface_list[-3] }}"]
 
@@ -29,19 +33,18 @@
   debug:
     var: "{{ item }}"
   with_items:
-    - active_eth_iface_list
     - inactive_eth_iface_list 
-    - test_iface
+    - test_ip_iface
     - test_vlan_iface
     - test_portchannel_members
 
 # Add and remove an ipv4 address from an interface
 - name: run ipv4 tests
-  include: incremental_config/incremental_config_ip.yml address={{test_ipv4_address}} interface={{test_iface}} ip_type='ipv4' 
+  include: incremental_config/incremental_config_ip.yml address={{test_ipv4_address}} interface={{test_ip_iface}} ip_type='ipv4' 
 
 # Add and remove an ipv6 address from an interface
 - name: run ipv6 tests
-  include: incremental_config/incremental_config_ip.yml address={{test_ipv6_address}} interface={{test_iface}} ip_type='ipv6' 
+  include: incremental_config/incremental_config_ip.yml address={{test_ipv6_address}} interface={{test_ip_iface}} ip_type='ipv6' 
 
 # Add and remove a vlan from an interface
 - name: run vlan tests
