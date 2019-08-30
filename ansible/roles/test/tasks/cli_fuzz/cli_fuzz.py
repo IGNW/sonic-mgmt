@@ -61,7 +61,7 @@ def initialize_arg_parser():
     parser.add_argument("-Q", "--qty", help="number of times to fuzz the command (Default=10)", type=int, nargs=1, default=[10])
 
     help_msg = "number of characters or a range of characters in the subcommand (Example=1-10) (Default=10)"
-    parser.add_argument("-L", "--length", help=help_msg, action="store", type=length_calc, nargs=1, default=[10])
+    parser.add_argument("-L", "--length", help=help_msg, action="store", type=length_calc, nargs=1, default=[[10,10]])
 
     return parser.parse_args()
 
