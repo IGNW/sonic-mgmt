@@ -20,41 +20,45 @@
       interface_facts:
       when: ansible_interface_facts is not defined
 
-    - name: get all available interface names
-      set_fact:
-        ports: "{{ ports|default([]) + [ item | regex_replace('Ethernet', '') | int ] }}"
-      with_items: minigraph_ports
+    - name: Read the current interfaces status
+      shell: show interfaces status | head
+      register: show_interface_status
 
-    - name: get all interface numbers
-      set_fact:
-        index: "{{ ports | sort }}"
+    - name: Extract the IP interfaces table from a previous command's output
+      parse_text_table:
+        text: "{{ show_interface_status.stdout }}"
 
-    - name: select port index 0 for test
+    - name: Find non-trunk interfaces
+      set_fact: candidate_ports="{{ candidate_ports|default([]) + [item] }}"
+      with_items: "{{ minigraph_ports }}"
+      when: parsed_table_dict[item]['Vlan'] != "trunk"
+
+    - name: Choose the first candidate port for testing
       set_fact:
-        intf1: "Ethernet{{ index[0] }}"
+        test_interface: "{{ candidate_ports[0] }}"
 
     - name: figure out selected interface index
       set_fact:
-        intf1_index: "{{ minigraph_port_indices[intf1] }}"
+        test_interface_index: "{{ minigraph_port_indices[test_interface] }}"
 
     - name: find if interface1 in portchannel
       set_fact:
         po1: "{{ item.key }}"
-      when: intf1 in item.value['members']
+      when: test_interface in item.value['members']
       with_dict: minigraph_portchannels
 
-    - name: move interface {{ intf1 }} out of {{ po1 }}
-      shell: teamdctl {{ po1 }} port remove {{ intf1 }}
+    - name: move interface {{ test_interface }} out of {{ po1 }}
+      shell: teamdctl {{ po1 }} port remove {{ test_interface }}
       become: yes
       when: po1 is defined
 
-    - name: bring {{ intf1 }} up
-      shell: config interface startup {{ intf1 }}
+    - name: bring {{ test_interface }} up
+      shell: config interface startup {{ test_interface }}
       become: yes
       when: po1 is defined
 
     - name: change SONiC DUT interface IP to test IP address
-      command: config interface ip add {{ intf1 }} {{ dut_ip }}/{{ dut_prefixlen}}
+      command: config interface ip add {{ test_interface }} {{ dut_ip }}/{{ dut_prefixlen}}
       become: yes
 
     - name: wait for interfaces to be up after removed from portchannel
@@ -74,8 +78,8 @@
         ptf_platform: remote
         ptf_platform_dir: ptftests
         ptf_test_params:
-          - acs_mac='{{ ansible_interface_facts[intf1]['macaddress'] }}'
-          - port='{{ intf1_index }}'
+          - acs_mac='{{ ansible_interface_facts[test_interface]['macaddress'] }}'
+          - port='{{ test_interface_index }}'
           - fake_mac='{{ item.fake_mac }}'
           - fake_ip='{{ item.fake_ip }}'
           - dut_ip='{{ dut_ip }}'
@@ -90,7 +94,7 @@
         that:
           - "{{ item.fake_ip in arptable['v4'].keys() }}"
           - "{{ arptable['v4'][item.fake_ip]['macaddress'] == item.fake_mac }}"
-          - "{{ arptable['v4'][item.fake_ip]['interface'] == intf1 }}"
+          - "{{ arptable['v4'][item.fake_ip]['interface'] == test_interface }}"
       with_list: arp_test_data
 
     - name: Clear the first test ARP entry
@@ -102,14 +106,14 @@
     - name: Check SONiC ARP table and confirm that the entry was removed
       assert:
         that:
-          - "{{ arptable['v4'][arp_test_data[0].fake_ip]['macaddress'] is None }}"
+          - "{{ arptable['v4'][arp_test_data[0].fake_ip]['macaddress'] == 'None' }}"
 
     - name: Confirm that the rest of the test ARP entries are still present
       assert:
         that:
           - "{{ item.fake_ip in arptable['v4'].keys() }}"
           - "{{ arptable['v4'][item.fake_ip]['macaddress'] == item.fake_mac }}"
-          - "{{ arptable['v4'][item.fake_ip]['interface'] == intf1 }}"
+          - "{{ arptable['v4'][item.fake_ip]['interface'] == test_interface }}"
       with_list: arp_test_data[1:]
 
     - name: Clear the all ARP entries
@@ -121,7 +125,7 @@
     - name: Confirm that all of the test ARP entries are gone
       assert:
         that:
-          - "{{ arptable['v4'][item.fake_ip]['macaddress'] is None }}"
+          - "{{ arptable['v4'][arp_test_data[0].fake_ip]['macaddress'] == 'None' }}"
       with_list: arp_test_data[1:]
 
   always:
@@ -145,30 +149,3 @@
     - name: last wait if still not up
       pause: seconds=30
       when: ansible_interface_link_down_ports | length != 0
-
-
-##############################################################################
-##############################################################################
-
-# - name: TODO: Use PTF to inject the ARP table entries for testing
-
-#- name: Get the latest ARP table entries
-#  switch_arptable:
-#- debug: var=arptable
-
-## - name: TODO: Verify that all of the expected ARP entries exist in 'arptable'
-#
-#- name: Clear the chosen IPv4 ARP entry
-#  shell: sonic-clear arp {{ chosen_arp_entry.parts[0] }}
-#
-#- name: Get the latest ARP table entries
-#  switch_arptable:
-#
-## - name: TODO: Verify that only the chosen IPv4 ARP entry has been cleared
-#
-#- name: Clear the chosen IPv6 ARP entry
-#  shell: sonic-clear arp {{ chosen_arp_entry.parts[0] }}
-#
-#- name: Get the latest ARP table entries
-#  switch_arptable:
-#
