@@ -1,10 +1,12 @@
 import logging
 import ptf
-# import ptf.packet as scapy
 
-from scapy.all import fuzz, RandIP, RandIP6
+import random
+from scapy.all import fuzz, RandIP, Raw
+from scapy.layers.inet import IP, UDP, TCP
 from ptf.base_tests import BaseTest
 from ptf.testutils import *
+from pprint import pformat
 
 
 class IpFuzzTest(BaseTest):
@@ -19,41 +21,29 @@ class IpFuzzTest(BaseTest):
         self.dataplane = ptf.dataplane_instance
         self.test_params = test_params_get()
         self.dataplane.flush()
-        self.log("IP Fuzz test setup")
 
-    def tearDown(self):
-        self.log("IP fuzz test teardown")
+    def build_fuzz_ip_packet(self, src_ip, dest_ip):
+        return fuzz(IP(src=src_ip, dst=dest_ip, version=4))
 
-    @staticmethod
-    def generate_ip_address(ip_version):
-        if ip_version == 4:
-            return RandIP()
+    def build_fuzz_tcp_packet(self, src_ip, dest_ip, dport=None):
+        self.log("Building TCP packet for {}->{} with dport={}".format(
+            src_ip, dest_ip, dport
+        ))
+        if dport:
+            layer4 = fuzz(TCP(dport=int(dport)))
         else:
-            return RandIP6()
+            layer4 = fuzz(TCP())
+        return IP(src=src_ip, dst=dest_ip)/layer4/fuzz(Raw())
 
-    def build_fuzz_ip_packet(self, src_ip, dest_ip, ip_version):
-        assert(ip_version in [4, 6])
-        if src_ip is None:
-            src_ip = self.generate_ip_address(ip_version)
-        if dest_ip is None:
-            dest_ip = self.generate_ip_address(ip_version)
-        return fuzz(scapy.IP(src=src_ip, dst=dest_ip))
-
-    def build_fuzz_tcp_packet(self, src_ip=None, dest_ip=None, ip_version=4):
-        assert(ip_version in [4, 6])
-        if src_ip is None:
-            src_ip = self.generate_ip_address(ip_version)
-        if dest_ip is None:
-            dest_ip = self.generate_ip_address(ip_version)
-        return fuzz(scapy.IP(src=src_ip, dst=dest_ip)/scapy.TCP())
-
-    def build_fuzz_udp_packet(self, src_ip=None, dest_ip=None, ip_version=4):
-        assert(ip_version in [4, 6])
-        if src_ip is None:
-            src_ip = self.generate_ip_address(ip_version)
-        if dest_ip is None:
-            dest_ip = self.generate_ip_address(ip_version)
-        return fuzz(scapy.IP(src=src_ip, dst=dest_ip)/scapy.UDP())
+    def build_fuzz_udp_packet(self, src_ip, dest_ip, dport=None):
+        self.log("Building UDP packet for {}->{} with dport={}".format(
+            src_ip, dest_ip, dport
+        ))
+        if dport:
+            layer4 = fuzz(UDP(dport=int(dport)))
+        else:
+            layer4 = fuzz(UDP())
+        return IP(src=src_ip, dst=dest_ip)/layer4/fuzz(Raw())
 
     def check_param(self, param, default, required):
         if param not in self.test_params:
@@ -62,32 +52,37 @@ class IpFuzzTest(BaseTest):
             self.test_params[param] = default
 
     def runTest(self):
-
-        # I need to know
-        #  What type of packets to generate
-        #  optionally a packet count
-        #  which switch port to send traffic to
-        #  optionally the source and destination IP addresses
-
-        self.check_param('port', '', required=True)
+        self.log('** DEBUG test_params:\n' + pformat(self.test_params))
+        self.check_param('port_list', '', required=True)
+        self.test_params['port_list'] = self.test_params['port_list'].split(',')
         self.check_param('packet_type', 'ip', required=False)
         self.check_param('packet_count', 1, required=False)
         self.check_param('src_ip', None, required=False)
         self.check_param('dest_ip', None, required=False)
-        self.check_param('ip_version', 4, required=False)
+        self.check_param('dest_port', None, required=False)
 
+        if not self.test_params['src_ip']:
+            self.test_params['src_ip'] = RandIP()
+        if not self.test_params['dest_ip']:
+            self.test_params['dest_ip'] = RandIP()
+
+        common_params = {
+           'src_ip': self.test_params['src_ip'],
+           'dest_ip': self.test_params['dest_ip'],
+        }
         if self.test_params['packet_type'] == 'ip':
-            pkt = self.build_fuzz_ip_packet(
-                src_ip=self.test_params['src_ip'],
-                dest_ip=self.test_params['dest_ip'],
-                ip_version=self.test_params['ip_version'])
+            pkt = self.build_fuzz_ip_packet(**common_params)
         elif self.test_params['packet_type'] == 'tcp':
-            pkt = self.build_fuzz_tcp_packet()
+            pkt = self.build_fuzz_tcp_packet(dport=self.test_params['dest_port'],
+                                             **common_params)
         elif self.test_params['packet_type'] == 'udp':
-            pkt = self.build_fuzz_udp_packet()
+            pkt = self.build_fuzz_udp_packet(dport=self.test_params['dest_port'],
+                                             **common_params)
         else:
             raise ValueError('Unknown packet type: ' + self.test_params['packet_type'])
 
-        self.log("Sending test packet(s)")
-        send(self, self.test_params['port'], pkt)
-
+        for i in range(int(self.test_params['packet_count'])):
+            # Choose randomly from the port list
+            port = random.choice(self.test_params['port_list'])
+            self.log("Sending test packet #{} to device port {}: {}".format(i, port, pkt.summary()))
+            send(self, port, pkt)
