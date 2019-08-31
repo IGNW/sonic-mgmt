@@ -41,7 +41,7 @@ def initialize_arg_parser():
             if not min.isdigit() and not max.isdigit():
                 raise argparse.ArgumentError("You can only pass integers into the length field.  You passed in: {0} {1}".format(min, max))
 
-            if min > max:
+            if int(min) > int(max):
                 to_return = [int(max), int(min)]
             else:
                 to_return = [int(min), int(max)]
