@@ -43,6 +43,10 @@ testcases:
           ptf_host:
           testbed_type:
 
+    cli_fuzz:
+      filename: cli_fuzz.yml
+      topologies: [t0-8, t1-8]
+
     config:
         filename: config.yml
         topologies: [t1-lag, t1-64-lag, t0, t0-64, t0-116]
