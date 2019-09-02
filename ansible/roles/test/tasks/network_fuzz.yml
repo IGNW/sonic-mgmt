@@ -70,7 +70,7 @@
       test_ports: "{{ candidate_ports[0] }}"
 
   rescue:
-    - name: Do basic sanity check after each test and allow recovery
+    - name: Do basic sanity check after a failure and allow recovery
       include: base_sanity.yml
       vars:
         recover: "{{ allow_recover }}"
