@@ -9,7 +9,7 @@ from ptf.testutils import *
 from pprint import pformat
 
 
-class IpFuzzTest(BaseTest):
+class NetworkFuzzTest(BaseTest):
     def __init__(self):
         BaseTest.__init__(self)
 
@@ -52,7 +52,7 @@ class IpFuzzTest(BaseTest):
             self.test_params[param] = default
 
     def runTest(self):
-        self.log('** DEBUG test_params:\n' + pformat(self.test_params))
+        self.log('test_params:\n' + pformat(self.test_params))
         self.check_param('port_list', '', required=True)
         self.test_params['port_list'] = self.test_params['port_list'].split(',')
         self.check_param('packet_type', 'ip', required=False)
@@ -86,3 +86,4 @@ class IpFuzzTest(BaseTest):
             port = random.choice(self.test_params['port_list'])
             self.log("Sending test packet #{} to device port {}: {}".format(i, port, pkt.summary()))
             send(self, port, pkt)
+            self.dataplane.flush()

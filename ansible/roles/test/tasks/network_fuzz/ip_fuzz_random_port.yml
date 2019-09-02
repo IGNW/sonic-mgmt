@@ -12,7 +12,7 @@
     vars:
       ptf_test_name: IP packet fuzz test
       ptf_test_dir: ptftests
-      ptf_test_path: ip_fuzz_test.IpFuzzTest
+      ptf_test_path: network_fuzz_test.NetworkFuzzTest
       ptf_platform: remote
       ptf_platform_dir: ptftests
       ptf_test_params:
@@ -21,7 +21,7 @@
         - packet_count='{{ packet_count | default(1) }}'
         - src_ip='{{ src_ip | default(None) }}'
         - dest_ip='{{ dest_ip | default(None) }}'
-      ptf_extra_options: "--relax --debug info --log-file /tmp/network_fuzz.IpFuzzTest.IP.{{lookup('pipe','date +%Y-%m-%d-%H:%M:%S')}}.log"
+      ptf_extra_options: "--relax --debug info --log-file /tmp/network_fuzz.NetworkFuzzTest.IP.{{lookup('pipe','date +%Y-%m-%d-%H:%M:%S')}}.log"
 
   - name: Check if logs contain any error messages
     include: roles/test/files/tools/loganalyzer/loganalyzer_analyze.yml
