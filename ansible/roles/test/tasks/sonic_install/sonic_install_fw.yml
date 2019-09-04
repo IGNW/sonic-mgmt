@@ -6,7 +6,8 @@
   - assert:
       that: 
         - upgrade_type == "onie"
-        - image_url is defined 
+        - image_url is defined
+        - "'http' in image_url"
 
   - block:
       - name: Set next boot device to ONIE

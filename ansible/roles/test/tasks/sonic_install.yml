@@ -5,13 +5,19 @@
   - name: set some facts for the reload
     set_fact:
       upgrade_type: onie
-      image_url: 'http://10.50.0.9/install/sonic-broadcom-2019-04.bin'
+
+  - name: verify required variables exist
+    assert:
+      that:
+        - image_url is defined
+        - "'http' in image_url"
 
   - name: get the loaded minigraph.xml file
     fetch:
       src: /etc/sonic/minigraph.xml
-      dest: /tmp/minigraph.xml
+      dest: /tmp/
       fail_on_missing: yes
+      flat: yes
 
   - name: pull `blkid` command from the device
     shell: blkid
@@ -19,26 +25,21 @@
     register: before_out
 
   - name: parse the output
-    sonic_install_blkid:
+    blkid:
       text: "{{ before_out.stdout }}"
   
-  - name: regisiter original partition info
+  - name: register original partition info
     set_fact:
       before_uuid: "{{ item.value['UUID'] }}"
       before_partuuid: "{{ item.value['PARTUUID'] }}"
     with_dict: blkid_dict
     when: item.value.get('LABEL') == "SONiC-OS"
 
-  - name: verify the variables are defined
+  - name: verify the variables are defined and not empty
     assert:
-      that: "{{ item }} is defined"
-    with_items:
-      - before_uuid
-      - before_partuuid
-
-  - name: verify the variables are not empty
-    assert:
-      that: "{{ item | length }} > 0"
+      that: 
+        - "{{ item }} is defined"
+        - "{{ item | length }} > 0"
     with_items:
       - before_uuid
       - before_partuuid
@@ -48,7 +49,7 @@
       that: play_hosts | length == 1
       msg: Only run this test against a single host.  Use the -l flag to limit the number of hosts if necessary
 
-  - name: reinstall the software using the upgrade_sonic library
+  - name: reinstall the software
     include: sonic_install/sonic_install_fw.yml
 
   - name: pull `blkid` command from the device
@@ -57,10 +58,10 @@
     register: after_out
 
   - name: parse the output
-    sonic_install_blkid:
+    blkid:
       text: "{{ after_out.stdout }}"
  
-  - name: regisiter updated partition info
+  - name: register updated partition info
     set_fact:
       after_uuid: "{{ item.value['UUID'] }}"
       after_partuuid: "{{ item.value['PARTUUID'] }}"
@@ -69,14 +70,9 @@
 
   - name: verify the variables are defined
     assert:
-      that: "{{ item }} is defined"
-    with_items:
-      - after_uuid
-      - after_partuuid
-
-  - name: verify the variables are not empty
-    assert:
-      that: "{{ item | length }} > 0"
+      that: 
+        - "{{ item }} is defined"
+        - "{{ item | length }} > 0"
     with_items:
       - after_uuid
       - after_partuuid
@@ -88,7 +84,6 @@
         - "before_partuuid != after_partuuid"
 
   always:
-  # Copied this from the deploy_mg section
   - name: restore the minigraph.xml file
     copy:
       src: /tmp/minigraph.xml
@@ -120,10 +115,17 @@
     become: true
     shell: config save -y
 
+  - name: wait for the system to stabilize
+    pause:
+      seconds: 30
 
-  - name: cleanup minigraph file
+  - name: run base sanity reset anything that's not working
+    include: base_sanity.yml
+    ignore_errors: true
+
+  - name: cleanup minigraph file from the container
     file:
-      src: /tmp/minigraph.xml
+      path: /tmp/minigraph.xml
       state: absent
     delegate_to: 127.0.0.1
-     
+
