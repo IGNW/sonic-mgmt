@@ -1,0 +1,37 @@
+- block:
+  - name: set initial values
+    set_fact:
+      seconds_to_run: 15 
+
+  - name: Get a list of active Ethernet interface names
+    set_fact:
+      test_interfaces: "{{ test_interfaces|default([]) }} + ['{{ item.device }}']"
+    when: item.active == True and "Ethernet" in item.device
+    with_items: "{{ ansible_interface_facts.values() }}"
+
+  - name: verify we have an active interface
+    assert:
+      that:
+        - test_interfaces is defined
+        - (test_interfaces | length) >= 1
+      msg: This test requires at least one active interface
+
+  - name: pick a test interface
+    set_fact:
+      test_interface: "{{ test_interfaces[0] }}"
+
+
+  - name: "run linkflap script on interface {{ test_interface }} for {{ seconds_to_run }} seconds"
+    vars:
+      script_to_run: "sonic_link_flap/sonic_link_flap.sh {{ seconds_to_run }} {{ test_interface }}"
+      testname: sonic_link_flap
+      out_dir: /tmp
+      run_dir: /tmp
+      errors_expected: false
+    include: roles/test/tasks/run_script_with_log_analyzer.yml
+
+  - name: some output
+    debug:
+      msg: Some output message
+
+
