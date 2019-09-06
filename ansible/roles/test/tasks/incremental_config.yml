@@ -19,7 +19,7 @@
 - name: verify that there are at least 2 interfaces that we can test with
   assert:
     that: (test_interfaces | length) >= 2
-    msg: This test requires at two active Ethernet interfaces
+    msg: This test requires at least two active Ethernet interfaces
 
 - name: Add and remove an IPv4 address from an interface
   include: incremental_config/incremental_config_ip.yml
