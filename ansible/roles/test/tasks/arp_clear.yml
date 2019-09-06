@@ -21,7 +21,6 @@
       when: ansible_interface_facts is not defined
 
     - name: Store the indices for the ports that operationally 'up'
-#      set_fact: candidate_ports="{{ candidate_ports|default([]) + [minigraph_port_indices[item.device]] }}"
       set_fact: candidate_ifaces="{{ candidate_ifaces|default([]) + [item.device] }}"
       with_items: ansible_interface_facts.values()
       when: item.active and (item.device | search('Ethernet'))
