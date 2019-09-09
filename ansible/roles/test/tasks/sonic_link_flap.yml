@@ -49,9 +49,9 @@
       errors_expected: false
     include: roles/test/tasks/run_script_with_log_analyzer.yml
 
-  - name: wait 20 seconds for the cpu to calm down
+  - name: wait 30 seconds for the cpu to calm down
     pause:
-      seconds: 20
+      seconds: 30
 
   - name: pull CPU utilization via shell
     # Explanation: Run top command with 2 iterations, 5sec delay. Discard the first iteration, then grap the CPU line from the second,
@@ -72,7 +72,7 @@
     debug:
       var: shell_cpu_usage_after.stdout
 
-  # If the CPU has 10% more utilization 20 seconds after the test is done, should fail
+  # If the CPU has 10% more utilization 30 seconds after the test is done, should fail
   - name: verify cpu usage is not significantly higher than it was before it started
     assert:
       that: ({{shell_cpu_usage_after.stdout}} - {{shell_cpu_usage_before.stdout}}) < 10
