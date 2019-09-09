@@ -72,7 +72,7 @@
     debug:
       var: shell_cpu_usage_after.stdout
 
-  # Arbitrarially picked that if the CPU is 10% 10 seconds after the log flood is done, should fail
+  # If the CPU has 10% more utilization 20 seconds after the test is done, should fail
   - name: verify cpu usage is not significantly higher than it was before it started
     assert:
       that: ({{shell_cpu_usage_after.stdout}} - {{shell_cpu_usage_before.stdout}}) < 10
