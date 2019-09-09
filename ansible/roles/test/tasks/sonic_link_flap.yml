@@ -47,6 +47,7 @@
       out_dir: /tmp
       run_dir: /tmp
       errors_expected: false
+      ignore_file: "loganalyzer_sonic_link_flap_ignore.txt"
     include: roles/test/tasks/run_script_with_log_analyzer.yml
 
   - name: wait 30 seconds for the cpu to calm down
