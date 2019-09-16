@@ -70,42 +70,8 @@
         - "nexthop group object"
         - "fdb"
 
-    - name: "Validate Setting CRM Threshold (Percentage) - Original Value"
+    - name: "Validate Setting CRM Threshold - Original Value"
       shell: crm show thresholds {{item}} | awk '/^$/ {next} NR>4 {if($3!=70 || $4!=85){exit 1}}'
-      with_items:
-        - "acl group"
-        - "acl group entry"
-        - "acl group counter"
-        - "acl table"
-        - "ipv4 route"
-        - "ipv4 nexthop"
-        - "ipv4 neighbor"
-        - "ipv6 route"
-        - "ipv6 nexthop"
-        - "ipv6 neighbor"
-        - "nexthop group member"
-        - "nexthop group object"
-        - "fdb"
-
-    - name: "Validate Setting CRM Threshold (Free) - Original Value"
-      shell: crm show thresholds {{item}} | awk '/^$/ {next} NR>4 {if($2!="free" || $3!=70 || $4!=85){exit 1}}'
-      with_items:
-        - "acl group"
-        - "acl group entry"
-        - "acl group counter"
-        - "acl table"
-        - "ipv4 route"
-        - "ipv4 nexthop"
-        - "ipv4 neighbor"
-        - "ipv6 route"
-        - "ipv6 nexthop"
-        - "ipv6 neighbor"
-        - "nexthop group member"
-        - "nexthop group object"
-        - "fdb"
-
-    - name: "Validate Setting CRM Threshold (Used) - Original Value"
-      shell: crm show thresholds {{item}} | awk '/^$/ {next} NR>4 {if($2!="used" || $3!=70 || $4!=85){exit 1}}'
       with_items:
         - "acl group"
         - "acl group entry"
