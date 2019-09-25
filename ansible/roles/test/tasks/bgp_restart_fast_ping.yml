@@ -1,0 +1,85 @@
+# Test case to verify that packets can continue being forwarded without packet
+# loss when the BGP service has a warm restart.
+
+- include_vars: "vars/topo_{{ testbed_type }}.yml"
+
+- name: Get VM loopback addresses from the topology file as a list
+  set_fact:
+    vm_loopbacks: "{{ vm_loopbacks|default([]) + [item.value.interfaces.Loopback0.ipv4] }}"
+  with_dict: "{{ configuration }}"
+
+- name: Set test variables using the first loopback
+  set_fact:
+    loopback_src: "{{ vm_loopbacks[0] }}"
+    loopback_dest: "{{ vm_loopbacks[1] }}"
+    dest_ip: "{{ vm_loopbacks[1] | ipaddr('address') }}"
+
+- name: Get route to the source loopback address from the DUT
+  shell: vtysh -c 'show ip route {{ loopback_src }} json'
+  register: src_output
+
+- name: Get route to the destination loopback address from the DUT
+  shell: vtysh -c 'show ip route {{ loopback_dest }} json'
+  register: dest_output
+
+- name: Read next hop from JSON output
+  set_fact:
+    src_route_info: "{{ (src_output.stdout|from_json)[loopback_src][0].nexthops[0] }}"
+    dest_route_info: "{{ (dest_output.stdout|from_json)[loopback_dest][0].nexthops[0] }}"
+
+- name: Set test values using the next hop route information
+  set_fact:
+    src_ip: "{{ src_route_info['ip'] }}"
+    src_nexthop_interface: "{{ src_route_info['interfaceName'] }}"
+    dest_nexthop_interface: "{{ dest_route_info['interfaceName'] }}"
+
+- name: Get port numbers for the source and next hop interfaces
+  set_fact:
+    send_port: "{{ minigraph_port_indices[src_nexthop_interface] }}"
+    recv_port: "{{ minigraph_port_indices[dest_nexthop_interface] }}"
+
+- debug: var=vm_loopbacks
+- debug: var=loopback_src
+- debug: var=loopback_dest
+- debug: var=src_ip
+- debug: var=src_nexthop_interface
+- debug: var=send_port
+- debug: var=dest_ip
+- debug: var=dest_nexthop_interface
+- debug: var=recv_port
+
+- name: copy test files over
+  copy: src=roles/test/files/ptftests dest=/root
+  delegate_to: "{{ ptf_host }}"
+
+- name: Make sure that BGP warm restart is enabled
+  shell: config warm_restart enable bgp
+  become: yes
+
+- name: Set bgp_timer value for warm_restart
+  shell: config warm_restart bgp_timer 60
+  become: yes
+
+- name: Restart the BGP service after a short delay, running in a background subprocess.
+  shell: "(sleep 5; service bgp restart &)"
+  become: yes
+  async: 15
+  poll: 0
+
+- name: Start PTF runner and send pings to a VM loopback IP which should be forwarded by the DUT
+  include: ptf_runner.yml
+  vars:
+    ptf_test_name: Fast Ping Test
+    ptf_test_dir: ptftests
+    ptf_test_path: fast_ping.FastPingTest
+    ptf_platform: remote
+    ptf_platform_dir: ptftests
+    ptf_test_params:
+      - router_mac='{{ ansible_interface_facts[src_nexthop_interface]['macaddress'] }}'
+      - src_ip='{{ src_ip }}'
+      - dest_ip='{{ dest_ip }}'
+      - send_port={{ send_port }}
+      - recv_port={{ recv_port }}
+      - duration_seconds=15
+      - packet_interval_ms=10
+    ptf_extra_options: "--relax --debug info --log-file /tmp/fast_ping.FastPingTest.{{lookup('pipe','date +%Y-%m-%d-%H:%M:%S')}}.log "
